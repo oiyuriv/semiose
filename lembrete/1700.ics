@@ -1,0 +1,21 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Semiose//Lembrete//PT
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:semiose-lembrete-1700@semiose
+DTSTAMP:20261029T120000Z
+DTSTART:20261029T170000
+DURATION:PT15M
+RRULE:FREQ=DAILY
+SUMMARY:Hora da leitura · Semiose
+DESCRIPTION:Sua seleção de hoje está pronta: https://oiyuriv.github.io/semiose/
+URL:https://oiyuriv.github.io/semiose/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora da leitura no Semiose
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+END:VCALENDAR
