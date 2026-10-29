@@ -39,7 +39,8 @@ function New-Http([int]$Seconds) {
   [void]$c.DefaultRequestHeaders.TryAddWithoutValidation('Accept-Language', 'pt-BR,pt;q=0.9,en;q=0.8')
   $c
 }
-$script:Http = New-Http 25
+# o OpenEdition às vezes demora mais de 25 s para responder aos servidores do GitHub
+$script:Http = New-Http 50
 $script:PageHttp = New-Http 12
 
 # ---------- temas ----------
