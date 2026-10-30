@@ -565,7 +565,7 @@ $seenTitles = @{}
 foreach ($grp in ($pool | Group-Object { $_.s })) {
   $src = $srcById[$grp.Name]
   $days = if ($src.days) { [int]$src.days } elseif ($src.kind -eq 'academia') { 365 } else { 21 }
-  $max = if ($src.max) { [int]$src.max } elseif ($src.kind -eq 'academia') { 5 } else { 12 }
+  $max = if ($src.max) { [int]$src.max } elseif ($src.kind -eq 'academia') { 8 } else { 15 }
   $cut = $now.AddDays(-$days)
   $cands = @()
   foreach ($it in $grp.Group) {

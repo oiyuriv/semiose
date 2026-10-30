@@ -462,6 +462,22 @@ main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding-bottom:ca
 .in-foot{margin-top:auto;padding-top:28px;display:flex;gap:10px}
 .in-foot .btn{flex:1;height:56px;font-size:16px;border-radius:28px}
 .in-foot .btn.ghost{flex:0 0 auto;padding:0 22px}
+/* primeira tela no celular: iPhone, Android ou navegador */
+.in-pick{display:grid;gap:10px;margin-top:24px}
+.in-pick button{position:relative;display:flex;align-items:center;gap:14px;padding:16px;border-radius:20px;background:var(--s2);text-align:left;transition:background .2s}
+.in-pick button:active{background:var(--s3)}
+.in-pick .pki{flex:none;width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--pc);color:var(--onpc)}
+.in-pick .pkt{min-width:0}
+.in-pick .pkt b{display:block;font:500 17px/1.2 var(--sans)}
+.in-pick .pkt span{display:block;font-size:13.5px;color:var(--muted);margin-top:3px;line-height:1.35}
+.in-pick i{position:absolute;top:12px;right:12px;font:500 11px/1 var(--sans);font-style:normal;padding:5px 8px;border-radius:8px;background:var(--p);color:var(--onp)}
+/* QR code para abrir no celular (versão web) */
+.qr{flex:none;width:112px;height:112px;padding:8px;border-radius:14px;background:#fff}
+.qr svg{display:block;width:100%;height:100%}
+.in-qr{display:flex;align-items:center;gap:16px;margin-top:22px;padding:14px;border-radius:20px;background:var(--s2)}
+.in-qr b{display:block;font-weight:500;font-size:15px}
+.in-qr span{display:block;font-size:13.5px;color:var(--muted);margin-top:4px;line-height:1.4}
+.qrrow{display:flex;align-items:center;gap:16px;font-size:13.5px;color:var(--muted);word-break:break-all}
 
 /* aviso */
 .toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 96px);z-index:90;transform:translate(-50%,20px);opacity:0;pointer-events:none;display:flex;align-items:center;gap:14px;width:max-content;max-width:calc(100% - 32px);min-height:48px;padding:10px 10px 10px 16px;border-radius:12px;background:var(--inv);color:var(--oninv);font-size:14px;line-height:1.35;box-shadow:0 4px 12px rgba(0,0,0,.25);transition:transform .3s cubic-bezier(.2,.85,.2,1),opacity .3s}
@@ -470,8 +486,78 @@ main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding-bottom:ca
 .toast button[hidden]{display:none}
 .confetti{position:fixed;inset:0;z-index:95;pointer-events:none;width:100%;height:100%}
 
+/* ---------- versão web (telas grandes): menu lateral, feed em grade, artigo abre ao lado ---------- */
+.navbrand,.navgoal{display:none!important}
+@media (min-width:960px){
+  body{padding-left:264px}
+  .top,.ptr{display:none}
+  .tabs{left:0;right:auto;top:0;bottom:0;transform:none;width:264px;display:flex;flex-direction:column;gap:4px;padding:20px 14px;border-radius:0;box-shadow:none;background:var(--s1)}
+  .tabs .navbrand{display:flex!important;padding:6px 12px 26px}
+  .tabs button{flex-direction:row;justify-content:flex-start;gap:2px;height:56px;padding:0 18px 0 0;border-radius:28px;font-size:14.5px;line-height:1}
+  .tabs .ind{width:56px;height:56px;background:none!important}
+  .tabs button.on{background:var(--sc);color:var(--onsc)}
+  .tabs .badge{position:static;margin-left:auto}
+  .tabs .navgoal{display:flex!important;justify-content:space-between;margin-top:auto;height:auto;min-height:60px;padding:10px 10px 10px 16px;border-radius:20px;background:var(--s3)}
+  .tabs .navgoal .lbl{text-align:left}
+  .tabs .navgoal.done{background:var(--pc)}
+  main{max-width:1200px;padding:12px 40px 64px}
+  .hello{padding:30px 4px 8px}
+  .hello h1{font-size:40px;max-width:820px}
+  .newsince{margin:18px 0 0;width:100%;max-width:820px}
+  .sec-h,.feedhead{padding-left:4px;padding-right:4px}
+  .dscroll{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));overflow:visible;padding:0;gap:14px}
+  .dcard{max-width:none;aspect-ratio:3/4;border-radius:24px}
+  .dcard .ttl{font-size:16.5px;-webkit-line-clamp:4}
+  .dcard .cv span{font-size:30px}
+  .dend{grid-column:1/-1;max-width:none;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:14px 18px;border-radius:18px}
+  .dend b{font-size:16px;font-weight:500}
+  .filters{padding:10px 0 14px}
+  .chips{padding:0 4px;flex-wrap:wrap}
+  .feed{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;padding-top:4px}
+  .swipe{margin:0}
+  .swipe .card{height:100%}
+  .feed .swipe:first-child:has(.hero){grid-column:1/-1}
+  .hero .media{aspect-ratio:21/9;max-height:440px}
+  .hero .ttl{font-size:32px;max-width:900px}
+  .hero .sum{max-width:760px}
+  .feed .endnote{grid-column:1/-1;margin:12px 0}
+  .vh{font-size:40px;padding:30px 4px 6px}
+  .vsub{padding:4px 4px 0}
+  .search{margin:16px 0 8px;max-width:720px}
+  .tgrid,.kgrid{grid-template-columns:repeat(4,1fr);padding:0;gap:12px}
+  .ttile.big{grid-column:span 2}
+  #v-explore .chips{padding:0}
+  .list{padding:0 4px}
+  .list.srcs{columns:2;column-gap:40px}
+  .list.srcs .srow{break-inside:avoid}
+  .list.res{display:grid;grid-template-columns:1fr 1fr;column-gap:40px}
+  .back{margin:16px 0 0}
+  .empty{margin:26px 0}
+  #v-me{display:grid;grid-template-columns:1fr 1fr;column-gap:16px;align-items:start}
+  #v-me > .prof,#v-me > .stats,#v-me > .about{grid-column:1/-1}
+  #v-me .prof{padding:30px 4px 8px}
+  #v-me .panel,#v-me .goalcard{margin:16px 0 0}
+  #v-me .stats{margin:16px 0 0;grid-template-columns:repeat(4,1fr)}
+  .sheet-card{left:auto;right:0;top:0;bottom:0;width:min(600px,100%);max-width:none;margin:0;border-radius:28px 0 0 28px;transform:translateX(105%)}
+  .grab{display:none}
+  .toast{bottom:28px;left:calc(50% + 132px)}
+  .rate{align-items:center}
+  .rate-card{margin:0}
+  .intro .in-wrap{max-width:600px;padding-top:56px}
+  .rd-body{padding-top:40px}
+}
+@media (min-width:960px) and (hover:hover){
+  .card{cursor:pointer;transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .3s,box-shadow .2s}
+  .card:hover{box-shadow:0 1px 3px rgba(0,0,0,.12),0 6px 18px rgba(0,0,0,.08)}
+  .media img{transition:opacity .45s ease,transform .5s ease}
+  .dcard:hover .media img.ok{transform:scale(1.04)}
+  .tabs button:hover,.chip:hover,.ttile:hover,.ktile:hover,.srow:hover,.mini:hover,.in-pick button:hover,.seg button:hover,.icobtn:hover,.back:hover{box-shadow:inset 0 0 0 999px color-mix(in srgb,var(--text) 6%,transparent)}
+  .btn:hover{box-shadow:inset 0 0 0 999px color-mix(in srgb,currentColor 8%,transparent)}
+  .btn.ghost:hover,.btn.warn:hover{box-shadow:inset 0 0 0 1px var(--line2),inset 0 0 0 999px color-mix(in srgb,currentColor 8%,transparent)}
+}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-@media (min-width:700px){.dcard{flex-basis:300px}}
+@media (min-width:700px) and (max-width:959px){.dcard{flex-basis:300px}}
 @media (max-width:360px){.hello h1{font-size:26px}.goalcard{grid-template-columns:104px 1fr;gap:14px}.bigring{width:104px;height:104px}.hb{grid-template-columns:96px 1fr 56px}.lrow{grid-template-columns:96px 1fr}.seg button{padding:0 10px}}
 </style>
 </head>
@@ -492,10 +578,12 @@ main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding-bottom:ca
 </main>
 
 <nav class="tabs" id="tabs">
+  <div class="navbrand wm" aria-hidden="true"><svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10.77 6.89 6.23 15.31M13.23 6.89l4.54 8.42M7.6 17.6h8.8"/><circle cx="12" cy="4.6" r="2.6" fill="currentColor" stroke="none"/><circle cx="5" cy="17.6" r="2.6"/><circle cx="19" cy="17.6" r="2.6"/></svg><span>Semiose</span></div>
   <button data-act="tab" data-tab="feed" class="on"><span class="ind"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path class="fill" d="M4 10.2 12 4l8 6.2V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z"/></svg></span>Hoje</button>
   <button data-act="tab" data-tab="explore"><span class="ind"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg></span>Explorar</button>
   <button data-act="tab" data-tab="saved"><span class="ind"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path class="fill" d="M6.5 4h11a1 1 0 0 1 1 1v15l-6.5-4-6.5 4V5a1 1 0 0 1 1-1z"/></svg></span>Salvos<span class="badge" id="savedBadge" hidden></span></button>
   <button data-act="tab" data-tab="me"><span class="ind"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle class="fill" cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c.8-3.6 3.8-5.6 7.5-5.6s6.7 2 7.5 5.6"/></svg></span>Perfil</button>
+  <button class="ringbtn navgoal" id="navgoal" data-act="tab" data-tab="me" aria-label="Meta do dia"></button>
 </nav>
 
 <div class="sheet" id="sheet" hidden>
@@ -539,6 +627,8 @@ const DEF = {
   saved: {}, read: {}, hidden: {}, opened: {}, tr: {}, muted: {}, days: {}, daily: null,
   // seen = última vez que o feed foi aberto (para contar o que chegou de novo)
   seen: 0,
+  // shown = artigos que já passaram pela tela (id → dia); de um dia para o outro eles não voltam
+  shown: {},
   user: { name: '', since: 0, intro: false, likes: [] },
   prof: { tag: {}, src: {}, word: {}, lang: {} },
   // theme: auto (segue o celular), light ou dark; hour = horário do lembrete; notif = avisos do app
@@ -708,9 +798,13 @@ function score(it, now, seed) {
   return { s, why };
 }
 const visible = it => !S.hidden[it.id] && !S.muted[it.s];
-function ranked(filterTag) {
+// inédito = nunca apareceu, ou apareceu só hoje (assim dá pra voltar no feed durante o dia).
+// O que passou pela tela em outro dia só volta pela busca, pelos salvos ou por "rever os que já passaram".
+const fresh = it => !S.shown[it.id] || S.shown[it.id] === dayKey();
+let showOld = false;
+function ranked(filterTag, withOld) {
   const now = Date.now(), seed = DAYSEED();
-  const pool = ITEMS.filter(it => visible(it) && !S.read[it.id] && (!filterTag || it.tg.includes(filterTag)))
+  const pool = ITEMS.filter(it => visible(it) && !S.read[it.id] && (withOld || fresh(it)) && (!filterTag || it.tg.includes(filterTag)))
     .map(it => { const r = score(it, now, seed); it._why = r.why; return { it, sc: r.s }; })
     .sort((a, b) => b.sc - a.sc);
   // mistura: evita a mesma fonte em sequência e o mesmo tema principal colado
@@ -729,8 +823,29 @@ function ranked(filterTag) {
   }
   return out;
 }
-function recent(filterTag) {
-  return ITEMS.filter(it => visible(it) && (!filterTag || it.tg.includes(filterTag))).sort((a, b) => b.date - a.date);
+function recent(filterTag, withOld) {
+  return ITEMS.filter(it => visible(it) && (withOld || fresh(it)) && (!filterTag || it.tg.includes(filterTag))).sort((a, b) => b.date - a.date);
+}
+// um card conta como visto quando metade dele passa pela tela
+let shownT;
+const seenObs = new IntersectionObserver(es => {
+  const k = dayKey(); let ch = false;
+  es.forEach(e => {
+    if (!e.isIntersecting) return;
+    const id = e.target.dataset.id || e.target.dataset.open;
+    if (id && !S.shown[id]) { S.shown[id] = k; ch = true; }
+    seenObs.unobserve(e.target);
+  });
+  if (ch) { clearTimeout(shownT); shownT = setTimeout(save, 800); }
+}, { threshold: 0.5 });
+function watchSeen(box) {
+  if (box) box.querySelectorAll('.swipe:not([data-w]),.dcard:not([data-w])').forEach(el => { el.dataset.w = 1; seenObs.observe(el); });
+}
+// o registro de vistos só guarda o que ainda está no feed (e o do último mês e meio)
+function pruneShown() {
+  if (!ITEMS.length) return;
+  const cut = shiftDay(dayKey(), -45);
+  for (const id in S.shown) if (!BYID[id] && S.shown[id] < cut) delete S.shown[id];
 }
 
 // ---------- meta do dia ----------
@@ -911,7 +1026,9 @@ const ICON = {
   left: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12H5M10 7l-5 5 5 5"/></svg>',
   addsq: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M12 8v8M8 12h8"/></svg>',
   dots: '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>',
-  ishare: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7.5 7.5L12 3l4.5 4.5"/><path d="M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7"/></svg>'
+  ishare: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7.5 7.5L12 3l4.5 4.5"/><path d="M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7"/></svg>',
+  phone: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 18.5h3"/></svg>',
+  globe: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z"/></svg>'
 };
 const LOGO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10.77 6.89 6.23 15.31M13.23 6.89l4.54 8.42M7.6 17.6h8.8"/><circle cx="12" cy="4.6" r="2.6" fill="currentColor" stroke="none"/><circle cx="5" cy="17.6" r="2.6"/><circle cx="19" cy="17.6" r="2.6"/></svg>';
 function face(v) {
@@ -985,9 +1102,9 @@ function greet() {
 }
 function renderRing() {
   const n = today(), g = S.set.goal, done = n >= g, st = streak();
-  const b = $('#ringbtn');
-  b.classList.toggle('done', done);
-  b.innerHTML = `<span class="lbl"><b>${done ? 'meta batida' : `${g - n === 1 ? 'falta' : 'faltam'} ${g - n}`}</b>${st > 1 ? `${st} dias seguidos` : 'hoje'}</span><span class="rc">${ring(n, g, 32, 3.5)}<span>${done ? ICON.check : n}</span></span>`;
+  const html = `<span class="lbl"><b>${done ? 'meta batida' : `${g - n === 1 ? 'falta' : 'faltam'} ${g - n}`}</b>${st > 1 ? `${st} dias seguidos` : 'hoje'}</span><span class="rc">${ring(n, g, 32, 3.5)}<span>${done ? ICON.check : n}</span></span>`;
+  // no celular o anel fica no topo; na versão web, embaixo do menu lateral
+  for (const b of [$('#ringbtn'), $('#navgoal')]) { b.classList.toggle('done', done); b.innerHTML = html; }
 }
 // quantos artigos chegaram desde a visita anterior (seenAt é fixado ao abrir o app)
 let seenAt = 0;
@@ -1000,13 +1117,15 @@ function renderFeedView() {
   }
   const g = S.set.goal;
   const dt = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
-  const tagsCount = {}; ITEMS.forEach(it => visible(it) && it.tg.forEach(t => tagsCount[t] = (tagsCount[t] || 0) + 1));
+  // os números contam só o que ainda não passou pela tela (é o que o feed vai mostrar)
+  const unseen = ITEMS.filter(it => visible(it) && !S.read[it.id] && (showOld || fresh(it)));
+  const tagsCount = {}; unseen.forEach(it => it.tg.forEach(t => tagsCount[t] = (tagsCount[t] || 0) + 1));
   const chips = [`<button class="chip${!feedTag ? ' on' : ''}" data-act="ftag" data-tag="">Tudo</button>`]
     .concat(TAG_ORDER.filter(t => tagsCount[t]).map(t => `<button class="chip${feedTag === t ? ' on' : ''}" data-act="ftag" data-tag="${t}">${esc(tagLabel(t))}<small>${tagsCount[t]}</small></button>`)).join('');
   const nn = newCount();
   v.innerHTML = `
     <div class="hello"><div class="kick">${esc(dt)}</div><h1>${helloText()}</h1>
-      <div class="upd"><span class="live"></span>atualizado ${since(Date.parse(FEED.updated))} · ${ITEMS.length} artigos · ${Object.keys(SRC).length} fontes</div></div>
+      <div class="upd"><span class="live"></span>atualizado ${since(Date.parse(FEED.updated))} · ${unseen.length} ${unseen.length === 1 ? 'artigo inédito' : 'artigos inéditos'} pra você · ${Object.keys(SRC).length} fontes</div></div>
     ${nn ? `<button class="newsince" data-act="fnew">${ICON.spark}<span><b>${nn} ${nn === 1 ? 'artigo novo' : 'artigos novos'}</b> desde a sua última visita. Toque para ver os mais recentes.</span></button>` : ''}
     <div class="sec-h"><h2>Seus <em>${g}</em> de hoje</h2><span class="aux" id="dailyAux"></span></div>
     <div class="dscroll" id="daily"></div>
@@ -1027,23 +1146,28 @@ function renderDaily() {
     <button class="dcard${S.read[it.id] ? ' is-read' : ''}" data-open="${it.id}">${media(it, 700)}<div class="shade"></div>
       <span class="num">${i + 1}</span>${S.read[it.id] ? `<span class="done">${ICON.check} lido</span>` : ''}
       <div class="over">${metaRow(it)}<h3 class="ttl">${esc(title(it))}</h3></div></button>`).join('')
-    + (readN === picks.length && picks.length ? `<div class="dend"><b>Seleção completa.</b>Amanhã tem outra, montada com o que você curtiu hoje.</div>` : `<div class="dend"><b>Por que esses?</b>Escolhidos pelo que você vem curtindo, com um de semiótica sempre que tiver.</div>`);
+    + (!picks.length ? `<div class="dend"><b>Nada inédito agora.</b>Você já viu tudo o que chegou. Os próximos artigos chegam ao longo do dia.</div>`
+      : readN === picks.length ? `<div class="dend"><b>Seleção completa.</b>Amanhã tem outra, só com artigos que você ainda não viu.</div>` : `<div class="dend"><b>Por que esses?</b>Escolhidos pelo que você vem curtindo, com um de semiótica sempre que tiver. Amanhã vêm outros, nenhum repetido.</div>`);
+  watchSeen(el);
 }
 function renderFeed(reset) {
   const box = $('#feedList'); if (!box) return;
   if (reset) {
     const dailyIds = new Set((S.daily && S.daily.day === dayKey() ? S.daily.items : []).map(x => x.id));
-    feedList = feedMode === 'foryou' ? ranked(feedTag).filter(it => !dailyIds.has(it.id)) : recent(feedTag);
+    feedList = feedMode === 'foryou' ? ranked(feedTag, showOld).filter(it => !dailyIds.has(it.id)) : recent(feedTag, showOld);
     feedShown = 0; box.innerHTML = '';
   }
   const next = feedList.slice(feedShown, feedShown + 16);
   box.insertAdjacentHTML('beforeend', next.map((it, i) => cardHtml(it, kindFor(it, feedShown + i))).join(''));
   feedShown += next.length;
   if (feedShown >= feedList.length) {
+    const old = !showOld && ITEMS.some(it => visible(it) && !S.read[it.id] && !fresh(it) && (!feedTag || it.tg.includes(feedTag)));
+    const oldBtn = old ? '<div class="btns" style="justify-content:center;margin-top:14px"><button class="btn sm ghost" data-act="showold">Rever os que já passaram</button></div>' : '';
     box.insertAdjacentHTML('beforeend', feedList.length
-      ? `<div class="endnote"><b>Você chegou ao fim.</b>O Semiose busca artigos novos sozinho a cada 2 horas.</div>`
-      : `<div class="endnote"><b>Tudo lido por aqui.</b>${feedTag ? 'Tente outro tema ou veja os recentes.' : 'Volte daqui a pouco: chegam artigos novos a cada 2 horas.'}</div>`);
+      ? `<div class="endnote"><b>Você chegou ao fim.</b>O Semiose busca artigos novos a cada 2 horas, e o que você já viu não volta a aparecer.${oldBtn}</div>`
+      : `<div class="endnote"><b>Você já viu tudo o que chegou.</b>${feedTag ? 'Tente outro tema. ' : ''}Os próximos artigos chegam ao longo do dia: o Semiose busca a cada 2 horas.${oldBtn}</div>`);
   }
+  watchSeen(box);
 }
 const moreObs = new IntersectionObserver(es => {
   if (es.some(e => e.isIntersecting) && cur === 'feed' && feedShown < feedList.length) renderFeed(false);
@@ -1090,7 +1214,7 @@ function renderExBody() {
     body = `${ex.f ? `<button class="back" data-act="exback">${ICON.back} Explorar</button>` : ''}
       <div class="sec-h"><h2>${ex.f ? esc(label) : 'Resultados'}</h2><span class="aux">${list.length} ${list.length === 1 ? 'artigo' : 'artigos'}</span></div>
       ${ex.f && ex.f.type === 'src' ? `<div class="list" style="margin-bottom:6px"><div class="btns"><a class="btn sm" href="${esc(SRC[ex.f.id].site)}" target="_blank" rel="noopener">${ICON.ext} Abrir site</a><button class="btn sm ghost" data-act="mute" data-src="${ex.f.id}">${S.muted[ex.f.id] ? 'Voltar a mostrar no feed' : 'Esconder do feed'}</button></div></div>` : ''}
-      <div class="list">${list.slice(0, 80).map(it => miniHtml(it, `<div class="tags" style="margin-top:8px">${S.read[it.id] ? readFlag(it) : tagsHtml(it, 2)}</div>`)).join('') || '<div class="empty"><b>Nada por aqui.</b>Tente outra palavra.</div>'}</div>`;
+      <div class="list res">${list.slice(0, 80).map(it => miniHtml(it, `<div class="tags" style="margin-top:8px">${S.read[it.id] ? readFlag(it) : tagsHtml(it, 2)}</div>`)).join('') || '<div class="empty"><b>Nada por aqui.</b>Tente outra palavra.</div>'}</div>`;
   } else {
     const P = S.prof.tag;
     const tiles = TAG_ORDER.filter(t => counts[t]).map((t, i) => {
@@ -1108,9 +1232,9 @@ function renderExBody() {
       <div class="sec-h"><h2>Idiomas</h2><span class="aux">o que vem de fora chega traduzido</span></div>
       <div class="chips" style="flex-wrap:wrap">${Object.keys(LANGS).filter(l => langs[l]).map(l => `<button class="chip" data-act="exf" data-type="lang" data-id="${l}">${LANGS[l]}<small>${langs[l]}</small></button>`).join('')}</div>
       <div class="sec-h"><h2>Fontes em português</h2><span class="aux">toque para ver ou esconder</span></div>
-      <div class="list">${srcs.filter(s => s.lang === 'pt').map(srcRow).join('')}</div>
+      <div class="list srcs">${srcs.filter(s => s.lang === 'pt').map(srcRow).join('')}</div>
       <div class="sec-h"><h2>Fontes de fora</h2><span class="aux">traduzidas</span></div>
-      <div class="list">${srcs.filter(s => s.lang !== 'pt').map(srcRow).join('')}</div>`;
+      <div class="list srcs">${srcs.filter(s => s.lang !== 'pt').map(srcRow).join('')}</div>`;
   }
   $('#exBody').innerHTML = body;
 }
@@ -1126,7 +1250,7 @@ function renderSaved() {
       ? `<div class="empty"><b>Nada salvo ainda.</b>Toque no marcador de um artigo ou arraste o card para a direita.</div>`
       : `<div class="empty"><b>Nenhuma leitura ainda.</b>Leia e dê uma nota: cada nota ensina o feed.</div>`;
   } else {
-    body = `<div class="list">${list.map(it => {
+    body = `<div class="list res">${list.map(it => {
       const r = S.read[it.id];
       const extra = shelf === 'saved'
         ? `<div class="foot" style="margin-top:8px"><div class="tags">${r ? readFlag(it) : tagsHtml(it, 2)}</div></div>`
@@ -1219,13 +1343,16 @@ function renderMe() {
       <div class="set"><div><b>Mostrar traduzido</b><span>títulos e resumos de fora em português</span></div><button class="tgl${S.set.trans ? ' on' : ''}" data-act="set" data-k="trans" aria-label="Mostrar traduzido"></button></div>
     </div>
 
-    <div class="panel"><h3>Seus dados</h3><p class="h">Ficam só neste aparelho. Faça um backup de vez em quando.</p>
-      <div class="btns"><button class="btn sm" data-act="export">Exportar backup</button><button class="btn sm" data-act="import">Importar</button>${isStandalone() ? '' : '<button class="btn sm" data-act="howinstall">Instalar no celular</button>'}<button class="btn sm" data-act="reintro">Rever boas-vindas</button><button class="btn sm warn" data-act="resetlearn">Zerar aprendizado</button></div></div>
+    ${IS_PHONE ? '' : `<div class="panel"><h3>No celular</h3><p class="h">Aponte a câmera do celular para o código. Lá o Semiose pode virar um app, com ícone na tela de início.</p><div class="qrrow"><div class="qr" id="qrMe"></div><span>${esc(APP_URL.replace(/^https?:\/\//, ''))}</span></div></div>`}
+
+    <div class="panel"><h3>Seus dados</h3><p class="h">Suas leituras, notas e salvos ficam só neste ${IS_PHONE ? (isStandalone() ? 'app' : 'navegador') : 'navegador'}, sem conta e sem nuvem. Para levar para outro lugar (do computador para o celular, por exemplo), exporte um backup aqui e importe lá.</p>
+      <div class="btns"><button class="btn sm" data-act="export">Exportar backup</button><button class="btn sm" data-act="import">Importar</button>${IS_PHONE && !isStandalone() ? '<button class="btn sm" data-act="howinstall">Instalar no celular</button>' : ''}<button class="btn sm" data-act="reintro">Rever boas-vindas</button><button class="btn sm warn" data-act="resetlearn">Zerar aprendizado</button></div></div>
     <p class="about">${FEED ? `${Object.keys(SRC).length} fontes · ${ITEMS.length} artigos · última coleta ${since(Date.parse(FEED.updated))}<br>` : ''}O feed se atualiza sozinho a cada 2 horas.<br>Semiose · comunicação, semiótica e linguagem, além do marketing</p>`;
   const inp = $('#nameInp');
   inp.addEventListener('input', () => { S.user.name = inp.value.trim().slice(0, 24); save(); const h = $('#v-me .prof h1'); if (h && h.firstChild) h.firstChild.nodeValue = userName() || 'Seu perfil'; const a = $('#v-me .avatar'); if (a) a.textContent = (userName() || 'S').charAt(0).toUpperCase(); feedDirty = true; syncSW(); });
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); });
   bindHour();
+  drawQR($('#qrMe'));
 }
 
 function updBadge() {
@@ -1260,7 +1387,13 @@ function remindHtml() {
   const opts = HOURS.map(h => `<option value="${h}"${S.set.hour === h ? ' selected' : ''}>${h}</option>`).join('');
   const calTxt = PLATFORM === 'android'
     ? 'Abre o Google Agenda com um evento que se repete todo dia nesse horário.'
-    : 'Cria um evento que se repete todo dia, com alarme, no calendário do celular. No iPhone, toque em “Adicionar tudo”.';
+    : PLATFORM === 'ios'
+      ? 'Cria um evento que se repete todo dia, com alarme, no calendário do iPhone. Quando ele perguntar, toque em “Adicionar tudo”.'
+      : 'Cria um evento que se repete todo dia nesse horário. Se o seu calendário estiver no celular, ele avisa lá.';
+  // no computador, as duas opções: Google Agenda ou arquivo para Outlook, Apple e outros
+  const calBtns = PLATFORM === 'other'
+    ? `<button class="btn pri sm" data-act="remind" data-k="gcal">${ICON.cal} Google Agenda</button><button class="btn sm" data-act="remind" data-k="ics">Outro calendário (.ics)</button>`
+    : `<button class="btn pri sm" data-act="remind">${ICON.cal} Adicionar ao calendário</button>`;
   const notifTxt = PLATFORM === 'android'
     ? 'Avisa quando a seleção do dia fica pronta, perto do horário escolhido. Precisa do app instalado.'
     : 'Mostra no ícone do app quantas leituras faltam hoje.';
@@ -1268,16 +1401,17 @@ function remindHtml() {
     ? `<div class="set"><div><b>Avisos do app</b><span>${notifTxt}</span></div><button class="tgl${S.set.notif ? ' on' : ''}" data-act="notif" aria-label="Avisos do app"></button></div>`
     : PLATFORM === 'ios' && !isStandalone() ? '<p class="note">Com o Semiose instalado na tela de início, ele também pode mostrar no ícone quantas leituras faltam.</p>' : '';
   return `<div class="set"><div><b>Horário</b><span>todo dia</span></div><select class="timesel" id="hourSel" aria-label="Horário do lembrete">${opts}</select></div>
-    <div class="set col"><div><b>No calendário</b><span>${calTxt}</span></div><div class="btns" style="margin-top:12px"><button class="btn pri sm" data-act="remind">${ICON.cal} Adicionar ao calendário</button></div></div>
+    <div class="set col"><div><b>No calendário</b><span>${calTxt}</span></div><div class="btns" style="margin-top:12px">${calBtns}</div></div>
     ${notif}`;
 }
 function bindHour() {
   const sel = $('#hourSel'); if (!sel) return;
   sel.addEventListener('change', () => { S.set.hour = sel.value; save(); syncSW(); });
 }
-function addReminder() {
+function addReminder(kind) {
   const [h, m] = S.set.hour.split(':');
-  if (PLATFORM === 'android') {
+  const gcal = kind ? kind === 'gcal' : PLATFORM === 'android';
+  if (gcal) {
     const d = new Date(), ymd = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
     const end = new Date(2000, 0, 1, +h, +m + 15);
     const url = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
@@ -1289,7 +1423,7 @@ function addReminder() {
   } else {
     window.open(`lembrete/${h}${m}.ics`, '_blank', 'noopener');
   }
-  toast(PLATFORM === 'android' ? 'Confirme o evento no Google Agenda.' : 'Se o celular perguntar, confirme para pôr no calendário.');
+  toast(gcal ? 'Confirme o evento no Google Agenda.' : PLATFORM === 'other' ? 'Abra o arquivo baixado para pôr no seu calendário.' : 'Se o celular perguntar, confirme para pôr no calendário.');
 }
 // o service worker não lê o localStorage: o que ele precisa fica numa cache própria
 function syncSW() {
@@ -1321,44 +1455,60 @@ async function toggleNotif() {
 }
 
 // ---------- boas-vindas ----------
-// No iPhone, o app da tela de início guarda os dados separado do Safari: por isso, quem abre pelo navegador
-// aprende primeiro a instalar, e as boas-vindas de verdade acontecem já dentro do app.
+// No celular, a primeira tela pergunta como a pessoa vai usar: iPhone, Android ou só o navegador.
+// No iPhone, o app da tela de início guarda os dados separado do Safari: quem instala termina as
+// boas-vindas já dentro do app. No Android, o app instalado e o Chrome dividem os mesmos dados.
+// No computador (versão web) não tem essa pergunta: o celular aparece como um QR code.
+const IS_PHONE = PLATFORM !== 'other' || matchMedia('(pointer: coarse)').matches;
 let installEvt = null;
-window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; if (!$('#intro').hidden && introSteps[introStep] === 'install') renderIntro(); });
-let introStep = 0, introSteps = [], introLikes = new Set(S.user.likes || []), introGoal = S.set.goal;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; if (!$('#intro').hidden && introHow === 'android') renderIntro(); });
+const INTRO_STEPS = ['hello', 'likes', 'goal', 'remind'];
+// introHow = sistema escolhido na primeira tela (ios, android); introOnly = aberto pelo perfil só para instalar
+let introStep = 0, introSteps = [], introHow = null, introOnly = false, introLikes = new Set(S.user.likes || []), introGoal = S.set.goal;
 function openIntro(only) {
-  introSteps = only ? [only] : (isStandalone() ? [] : ['install']).concat(['hello', 'likes', 'goal', 'remind']);
-  introStep = 0; introLikes = new Set(S.user.likes || []); introGoal = S.set.goal;
+  introOnly = !!only;
+  introSteps = only ? ['how'] : (IS_PHONE && !isStandalone() ? ['how'] : []).concat(INTRO_STEPS);
+  introStep = 0; introHow = null; introLikes = new Set(S.user.likes || []); introGoal = S.set.goal;
   $('#intro').hidden = false; document.body.style.overflow = 'hidden';
   renderIntro();
 }
-function installHtml(alone) {
-  const link = esc(location.host + location.pathname.replace(/index\.html$/, ''));
-  const head = alone ? `<h1>Coloque o Semiose na <em>tela de início</em>.</h1>` : `<h1>Boas-vindas ao <em>Semiose</em>.</h1>`;
+function closeIntro() { $('#intro').hidden = true; document.body.style.overflow = ''; }
+function howHtml() {
+  const rec = p => PLATFORM === p ? '<i>parece ser o seu</i>' : '';
+  return `<div class="in-logo">${LOGO}</div>
+    <h1>${introOnly ? 'Semiose no <em>celular</em>.' : 'Boas-vindas ao <em>Semiose</em>.'}</h1>
+    <p class="lead">Como você vai usar? No celular, o Semiose pode virar um app: fica com ícone na tela de início e abre em tela cheia.</p>
+    <div class="in-pick">
+      <button data-act="ihow" data-v="ios"><span class="pki">${ICON.phone}</span><span class="pkt"><b>iPhone</b><span>Virar app na tela de início</span></span>${rec('ios')}</button>
+      <button data-act="ihow" data-v="android"><span class="pki">${ICON.phone}</span><span class="pkt"><b>Android</b><span>Virar app na tela inicial</span></span>${rec('android')}</button>
+      <button data-act="ihow" data-v="web"><span class="pki">${ICON.globe}</span><span class="pkt"><b>Pelo navegador</b><span>${introOnly ? 'Continuar como está' : 'Sem instalar nada. Dá pra instalar depois, pelo perfil.'}</span></span></button>
+    </div>`;
+}
+function installHtml(os) {
   const step = (ic, txt) => `<li>${ic}<p>${txt}</p></li>`;
   const appIcon = '<img class="ic" src="icons/icon-180.png" alt="">';
-  let lead, steps, extra = '';
-  if (PLATFORM === 'android') {
-    lead = 'Antes de começar, instale o Semiose no celular. Assim ele abre como um app, em tela cheia e com ícone próprio:';
-    steps = step(`<span class="ic">${ICON.dots}</span>`, 'No Chrome, toque nos <b>três pontinhos</b>, no canto de cima.')
+  const back = '<button class="btn ghost" data-act="ihow" data-v="">Voltar</button>';
+  if (os === 'android') {
+    const steps = step(`<span class="ic">${ICON.dots}</span>`, 'No Chrome, toque nos <b>três pontinhos</b>, no canto de cima.')
       + step(`<span class="ic">${ICON.addsq}</span>`, 'Toque em <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.')
       + step('<span class="ic txt">Instalar</span>', 'Confirme tocando em <b>Instalar</b>.')
-      + step(appIcon, 'Abra o <b>Semiose</b> pelo ícone novo. É ali que suas leituras ficam guardadas.');
-    if (installEvt) extra = `<button class="btn pri" data-act="iinstall">Instalar agora</button>`;
-  } else {
-    lead = PLATFORM === 'ios'
-      ? 'Antes de começar, coloque o Semiose na tela de início do iPhone. Assim ele abre como um app, em tela cheia e com ícone próprio. Leva uns 20 segundos:'
-      : `O Semiose foi feito pro celular. No iPhone, abra <b>${link}</b> no Safari e siga estes passos (no Android, use o Chrome e o menu de três pontinhos):`;
-    steps = step(`<span class="ic">${ICON.ishare}</span>`, 'No Safari, toque em <b>Compartilhar</b> (o quadrado com a seta pra cima). Se não estiver na barra, ele fica dentro dos <b>três pontinhos (•••)</b>, ao lado do endereço.')
-      + step(`<span class="ic">${ICON.addsq}</span>`, 'Role a lista para baixo e toque em <b>Adicionar à Tela de Início</b>.')
-      + step('<span class="ic txt">Adicionar</span>', 'Se aparecer <b>Abrir como App Web</b>, deixe ligado. Depois toque em <b>Adicionar</b>.')
-      + step(appIcon, 'Feche o Safari e abra o <b>Semiose</b> pelo ícone novo. É ali que suas leituras ficam guardadas.');
+      + step(appIcon, 'Pronto: o <b>Semiose</b> aparece com os outros apps. Abra por ele daqui pra frente.');
+    const now = installEvt ? '<button class="btn pri" data-act="iinstall">Instalar agora</button>' : '';
+    const go = introOnly ? '<button class="btn" data-act="iclose">Fechar</button>' : `<button class="btn${now ? '' : ' pri'}" data-act="inext">Continuar</button>`;
+    return `<div class="in-logo">${ICON.phone}</div><h1>No <em>Android</em></h1>
+      <p class="lead">Use o Chrome. Leva uns 20 segundos:</p><ol class="in-how">${steps}</ol>
+      <p class="in-note">${introOnly ? 'Suas leituras continuam: no Android, o app e o Chrome guardam as mesmas.' : 'Pode continuar as boas-vindas aqui mesmo: no Android, o app e o Chrome guardam as mesmas leituras.'}</p>
+      <div class="in-foot">${back}${now}${go}</div>`;
   }
-  const note = PLATFORM === 'ios' ? '<p class="in-note">Use o Safari: em outros navegadores essa opção pode não aparecer.</p>' : '';
-  const foot = alone
-    ? `<div class="in-foot">${extra}<button class="btn" data-act="iclose">Voltar ao app</button></div>`
-    : `<div class="in-foot">${extra}<button class="btn${extra ? '' : ' pri'}" data-act="inext">${extra ? 'Agora não' : 'Continuar no navegador'}</button></div>`;
-  return `<div class="in-logo">${LOGO}</div>${head}<p class="lead">${lead}</p><ol class="in-how">${steps}</ol>${note}${foot}`;
+  const steps = step(`<span class="ic">${ICON.ishare}</span>`, 'No Safari, toque em <b>Compartilhar</b> (o quadrado com a seta pra cima). Se não estiver na barra, ele fica dentro dos <b>três pontinhos (•••)</b>, ao lado do endereço.')
+    + step(`<span class="ic">${ICON.addsq}</span>`, 'Role a lista para baixo e toque em <b>Adicionar à Tela de Início</b>.')
+    + step('<span class="ic txt">Adicionar</span>', 'Se aparecer <b>Abrir como App Web</b>, deixe ligado. Depois toque em <b>Adicionar</b>.')
+    + step(appIcon, `Feche o Safari e abra o <b>Semiose</b> pelo ícone novo. ${introOnly ? '' : 'As boas-vindas continuam lá.'}`);
+  const other = PLATFORM !== 'ios' ? `<p class="in-note">Abra <b>${esc(APP_URL.replace(/^https?:\/\//, ''))}</b> no Safari do iPhone e siga estes passos.</p>` : '';
+  return `<div class="in-logo">${ICON.phone}</div><h1>No <em>iPhone</em></h1>
+    <p class="lead">Use o Safari: em outros navegadores essa opção pode não aparecer. Leva uns 20 segundos:</p><ol class="in-how">${steps}</ol>${other}
+    <p class="in-note">No iPhone, o app da tela de início guarda as leituras separado do Safari. Por isso vale começar já pelo app.</p>
+    <div class="in-foot">${back}${introOnly ? '<button class="btn pri" data-act="iclose">Fechar</button>' : '<button class="btn" data-act="inext">Usar no Safari mesmo</button>'}</div>`;
 }
 function renderIntro() {
   const kind = introSteps[introStep];
@@ -1366,13 +1516,16 @@ function renderIntro() {
   const nm = userName();
   const back = introStep ? '<button class="btn ghost" data-act="iback">Voltar</button>' : '';
   let body;
-  if (kind === 'install') {
-    body = installHtml(introSteps.length === 1);
+  if (kind === 'how') {
+    body = introHow ? installHtml(introHow) : howHtml();
   } else if (kind === 'hello') {
+    // no computador, a versão web convida a levar para o celular pelo QR code
+    const qr = IS_PHONE ? '' : `<div class="in-qr"><div class="qr" id="qrBox"></div><div><b>Quer ler no celular também?</b><span>Aponte a câmera do celular para o código. Lá ele pode virar um app.</span></div></div>`;
     body = `<div class="in-logo">${LOGO}</div>
       <h1>${nm ? `Olá, <em>${esc(nm)}</em>.` : 'Boas-vindas ao <em>Semiose</em>.'}</h1>
-      <p class="lead">Todo dia, o Semiose junta o que sai de novo sobre comunicação: semiótica, discurso, jornalismo, mídia e imagem. Vem de revistas científicas, ensaios e revistas do Brasil e de fora. É para ler além do conteúdo de marketing. O que vem em outra língua chega traduzido.</p>
+      <p class="lead">Todo dia, o Semiose junta o que sai de novo sobre comunicação: semiótica, discurso, jornalismo, mídia e imagem. Vem de revistas científicas, ensaios e revistas do Brasil e de fora. É para ler além do conteúdo de marketing. O que vem em outra língua chega traduzido, e nenhum artigo se repete de um dia para o outro.</p>
       <div class="in-field"><label for="inName">Como prefere ser chamado?</label><input id="inName" value="${esc(nm)}" maxlength="24" autocomplete="off" enterkeyhint="next" placeholder="Seu nome"></div>
+      ${qr}
       <div class="in-foot">${back}<button class="btn pri" data-act="inext">Continuar</button></div>`;
   } else if (kind === 'likes') {
     const opts = TAG_ORDER.filter(t => t !== 'academia');
@@ -1381,14 +1534,16 @@ function renderIntro() {
       <div class="in-chips">${opts.map(t => `<button class="chip${introLikes.has(t) ? ' on' : ''}" data-act="inlike" data-tag="${t}">${esc(tagLabel(t))}</button>`).join('')}</div>
       <div class="in-foot">${back}<button class="btn pri" data-act="inext">${introLikes.size ? 'Continuar' : 'Pular'}</button></div>`;
   } else if (kind === 'goal') {
-    body = `<h1>Quantos artigos <em>por dia</em>?</h1>
-      <p class="lead">Todo dia o Semiose separa essa quantidade de leituras pra você. A meta aparece no topo e no seu perfil, e dá pra mudar quando quiser.</p>
-      <div class="in-goal">${[1, 3, 5, 8].map(n => `<button class="${introGoal === n ? 'on' : ''}" data-act="ingoal" data-v="${n}">${n}<small>${n === 1 ? 'com calma' : n === 3 ? 'leve' : n === 5 ? 'normal' : 'intenso'}</small></button>`).join('')}</div>
-      <div class="in-tips">
-        <div>${ICON.tap}<span>Toque num artigo para abrir, ler e dar uma nota.</span></div>
+    const tips = IS_PHONE
+      ? `<div>${ICON.tap}<span>Toque num artigo para abrir, ler e dar uma nota.</span></div>
         <div>${ICON.right}<span>Arraste o card para a direita para salvar.</span></div>
-        <div>${ICON.left}<span>Arraste para a esquerda quando não quiser ver aquilo.</span></div>
-      </div>
+        <div>${ICON.left}<span>Arraste para a esquerda quando não quiser ver aquilo.</span></div>`
+      : `<div>${ICON.tap}<span>Clique num artigo para abrir, ler e dar uma nota.</span></div>
+        <div>${ICON.bm}<span>Use o marcador para salvar e ler depois.</span></div>`;
+    body = `<h1>Quantos artigos <em>por dia</em>?</h1>
+      <p class="lead">Todo dia o Semiose separa essa quantidade de leituras pra você, sempre com artigos que você ainda não viu. A meta aparece ${IS_PHONE ? 'no topo' : 'no menu'} e no seu perfil, e dá pra mudar quando quiser.</p>
+      <div class="in-goal">${[1, 3, 5, 8].map(n => `<button class="${introGoal === n ? 'on' : ''}" data-act="ingoal" data-v="${n}">${n}<small>${n === 1 ? 'com calma' : n === 3 ? 'leve' : n === 5 ? 'normal' : 'intenso'}</small></button>`).join('')}</div>
+      <div class="in-tips">${tips}</div>
       <div class="in-foot">${back}<button class="btn pri" data-act="inext">Continuar</button></div>`;
   } else {
     body = `<div class="in-logo">${ICON.bell}</div><h1>Quer um <em>lembrete</em>?</h1>
@@ -1399,11 +1554,27 @@ function renderIntro() {
   $('#introBody').innerHTML = steps + body;
   $('#intro').scrollTop = 0;
   bindHour();
+  drawQR($('#qrBox'));
   const inp = $('#inName');
   if (inp) {
     inp.addEventListener('input', () => { S.user.name = inp.value.trim().slice(0, 24); save(); const h = $('#introBody h1'); if (h) h.innerHTML = userName() ? `Olá, <em>${esc(userName())}</em>.` : 'Boas-vindas ao <em>Semiose</em>.'; });
     inp.addEventListener('keydown', e => { if (e.key === 'Enter') { inp.blur(); introStep++; renderIntro(); } });
   }
+}
+// escolha na primeira tela: iPhone e Android mostram como instalar; navegador segue as boas-vindas
+function pickHow(v) {
+  if (v === 'web') { if (introOnly) closeIntro(); else { introStep++; renderIntro(); } return; }
+  introHow = v || null;
+  renderIntro();
+}
+// QR code com o endereço do app (a biblioteca só é baixada na versão web, quando precisa)
+let qrLib = null;
+function drawQR(el) {
+  if (!el) return;
+  const draw = () => { const q = qrcode(0, 'M'); q.addData(APP_URL); q.make(); el.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true, alt: 'QR code do Semiose' }); };
+  if (window.qrcode) return draw();
+  if (!qrLib) qrLib = new Promise((ok, no) => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js'; s.onload = ok; s.onerror = no; document.head.appendChild(s); });
+  qrLib.then(draw).catch(() => { const box = el.closest('.in-qr,.qrrow'); if (box) box.hidden = true; });
 }
 // os temas marcados entram como se já tivessem sido curtidos algumas vezes
 function setLikes(next) {
@@ -1428,7 +1599,7 @@ function go(tab) {
   scrolls[cur] = window.scrollY;
   cur = tab;
   document.querySelectorAll('main > .view').forEach(s => s.hidden = s.id !== 'v-' + tab);
-  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  document.querySelectorAll('#tabs > button:not(.navgoal)').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
   // o feed só é refeito se algo mudou (ajustes, fontes); senão volta do mesmo ponto
   if (tab === 'feed') { if (feedDirty || !$('#feedList')) { feedDirty = false; renderFeedView(); scrolls.feed = 0; } else { renderDaily(); refreshHello(); } }
   if (tab === 'explore') renderExplore();
@@ -1756,16 +1927,18 @@ function act(el, e) {
       break;
     }
     case 'editname': { const i = $('#nameInp'); if (i) { i.scrollIntoView({ block: 'center', behavior: 'smooth' }); setTimeout(() => i.focus(), 300); } break; }
-    case 'remind': addReminder(); break;
+    case 'remind': addReminder(d.k); break;
+    case 'showold': showOld = true; renderFeedView(); setTimeout(() => { const h = $('.feedhead'); if (h) window.scrollTo({ top: h.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' }); }, 60); toast('Mostrando também os que já passaram.'); break;
+    case 'ihow': pickHow(d.v); break;
     case 'notif': toggleNotif(); break;
     case 'inext': introStep = Math.min(introSteps.length - 1, introStep + 1); renderIntro(); break;
     case 'iback': introStep = Math.max(0, introStep - 1); renderIntro(); break;
     case 'inlike': { const t = d.tag; if (introLikes.has(t)) introLikes.delete(t); else introLikes.add(t); el.classList.toggle('on', introLikes.has(t)); const b = $('#introBody .in-foot .btn.pri'); if (b) b.textContent = introLikes.size ? 'Continuar' : 'Pular'; break; }
     case 'ingoal': introGoal = +d.v; document.querySelectorAll('.in-goal button').forEach(b => b.classList.toggle('on', +b.dataset.v === introGoal)); break;
     case 'idone': finishIntro(); break;
-    case 'iclose': $('#intro').hidden = true; document.body.style.overflow = ''; break;
+    case 'iclose': closeIntro(); break;
     case 'iinstall': if (installEvt) { installEvt.prompt(); installEvt.userChoice.then(c => { installEvt = null; if (c.outcome === 'accepted') toast('Semiose instalado. Abra pelo ícone novo.'); renderIntro(); }).catch(() => {}); } break;
-    case 'howinstall': openIntro('install'); break;
+    case 'howinstall': openIntro('how'); break;
     case 'reintro': openIntro(); break;
     case 'less': { closeDetail(); const w = document.querySelector(`.swipe[data-id="${id}"]`); hideItem(id, w); break; }
     case 'exf': ex.f = { type: d.type, id: d.id }; ex.q = ''; renderExplore(); window.scrollTo(0, 0); break;
@@ -1874,6 +2047,7 @@ new MutationObserver(() => { const m = $('#more'); if (m && !m._obs) { m._obs = 
   if (!S.user.intro) openIntro();
   const had = !!FEED;
   const ok = await loadFeed();
+  pruneShown();
   if (ok && cur === 'feed' && (!had || window.scrollY < 120)) renderFeedView();
   if (!ok && !had) $('#v-feed').innerHTML = `<div class="empty"><b>Sem conexão.</b>Abra de novo quando tiver internet para baixar os primeiros artigos.</div>`;
   renderRing(); syncSW(); updAppBadge();
