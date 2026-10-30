@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Semiose">
 <meta name="description" content="Artigos, revistas científicas e ensaios sobre comunicação, semiótica e linguagem, para ler além do marketing.">
-<meta name="theme-color" content="#fbf8ff">
+<meta name="theme-color" content="#121318">
 <meta name="color-scheme" content="light dark">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
@@ -19,7 +19,7 @@
 <title>Semiose</title>
 <script>
 // tema escolhido no perfil, aplicado antes de desenhar para não piscar
-(function () { var t = 'auto'; try { t = ((JSON.parse(localStorage.getItem('semiose.v1')) || {}).set || {}).theme || 'auto'; } catch (e) {} if (t !== 'auto') document.documentElement.setAttribute('data-theme', t); })();
+(function () { var t = 'dark'; try { var s = JSON.parse(localStorage.getItem('semiose.v1')) || {}; t = (s.set || {}).theme || 'dark'; if (!s.v && t === 'auto') t = 'dark'; } catch (e) {} if (t !== 'auto') document.documentElement.setAttribute('data-theme', t); })();
 </script>
 <style>
 /* cores no esquema do Material 3 (o mesmo dos apps do Google), com claro e escuro */
@@ -143,6 +143,9 @@ main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding-bottom:ca
 .chip.on{background:var(--sc);border-color:var(--sc);color:var(--onsc)}
 .chip.on::before{content:"";width:14px;height:14px;margin-left:-4px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z'/%3E%3C/svg%3E") center/contain no-repeat}
 .chip small{opacity:.7;font-size:12px;font-weight:400}
+.chip svg{flex:none;width:16px;height:16px}
+.chip.k.on svg{display:none}
+.filters .chips + .chips{margin-top:8px}
 .feedhead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:26px 20px 6px}
 .feedhead h2{font:400 22px/1.2 var(--sans)}
 .seg{display:inline-flex;border:1px solid var(--line2);border-radius:20px;overflow:hidden}
@@ -174,6 +177,9 @@ main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding-bottom:ca
 .fav img{width:100%;height:100%;object-fit:cover}
 .lb{flex:none;display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:6px;background:var(--s4);color:var(--muted);font:500 10.5px/1 var(--sans);letter-spacing:.02em}
 .kd{flex:none;display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:6px;background:var(--tc);color:var(--ontc);font:500 11px/1 var(--sans)}
+.kd.k-ensaio{background:var(--sc);color:var(--onsc)}
+.kd.k-blog{background:var(--pc);color:var(--onpc)}
+.kd.k-mag{background:var(--s4);color:var(--muted)}
 .dcard .kd,.hero .kd{background:rgba(255,255,255,.9);color:#2e1128}
 .ttl{font:500 18px/1.32 var(--sans);letter-spacing:-.003em;margin:10px 0 6px;color:var(--text);text-wrap:pretty}
 .sum{font-size:14.5px;line-height:1.5;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
@@ -511,7 +517,8 @@ main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding-bottom:ca
   .dcard .cv span{font-size:30px}
   .dend{grid-column:1/-1;max-width:none;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:14px 18px;border-radius:18px}
   .dend b{font-size:16px;font-weight:500}
-  .filters{padding:10px 0 14px}
+  /* no computador as duas fileiras de filtro cabem abertas; ficam no lugar em vez de grudar no topo */
+  .filters{position:static;padding:10px 0 14px}
   .chips{padding:0 4px;flex-wrap:wrap}
   .feed{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;padding-top:4px}
   .swipe{margin:0}
@@ -631,8 +638,8 @@ const DEF = {
   shown: {},
   user: { name: '', since: 0, intro: false, likes: [] },
   prof: { tag: {}, src: {}, word: {}, lang: {} },
-  // theme: auto (segue o celular), light ou dark; hour = horário do lembrete; notif = avisos do app
-  set: { goal: 5, pt: true, trans: true, size: 18, theme: 'auto', hour: '08:00', notif: false }
+  // theme: dark (padrão: o app sempre abre escuro), light ou auto (segue o celular); hour = horário do lembrete; notif = avisos do app
+  set: { goal: 5, pt: true, trans: true, size: 18, theme: 'dark', hour: '08:00', notif: false }
 };
 const S = (() => {
   let s = {};
@@ -642,6 +649,9 @@ const S = (() => {
   out.prof = Object.assign(d.prof, s.prof || {});
   out.user = Object.assign(d.user, s.user || {});
   out.set = Object.assign(JSON.parse(JSON.stringify(DEF.set)), s.set || {});
+  // quem usou a primeira versão ficou com o tema automático salvo: passa para o escuro, que virou o padrão
+  if (s.set && !s.v && out.set.theme === 'auto') out.set.theme = 'dark';
+  out.v = 2;
   return out;
 })();
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
@@ -699,6 +709,9 @@ const TAG_FALLBACK = { semiotica: 'Semiótica', discurso: 'Discurso & linguagem'
 // formato de cada fonte (kind em sources.json)
 const KINDS = { academia: 'Revista científica', ensaio: 'Ensaio & opinião', mag: 'Revista & portal', blog: 'Blog' };
 const KINDS_PL = { academia: 'Revistas científicas', ensaio: 'Ensaios & opinião', mag: 'Revistas & portais', blog: 'Blogs' };
+const KIND_BADGE = { academia: 'Científico', ensaio: 'Ensaio', mag: 'Matéria', blog: 'Blog' };
+// nomes curtos para os filtros do feed
+const KIND_CHIP = { academia: 'Artigos científicos', ensaio: 'Ensaios e opinião', mag: 'Matérias', blog: 'Blogs' };
 
 function setFeed(f) {
   FEED = f;
@@ -802,9 +815,9 @@ const visible = it => !S.hidden[it.id] && !S.muted[it.s];
 // O que passou pela tela em outro dia só volta pela busca, pelos salvos ou por "rever os que já passaram".
 const fresh = it => !S.shown[it.id] || S.shown[it.id] === dayKey();
 let showOld = false;
-function ranked(filterTag, withOld) {
+function ranked(filterTag, withOld, kind) {
   const now = Date.now(), seed = DAYSEED();
-  const pool = ITEMS.filter(it => visible(it) && !S.read[it.id] && (withOld || fresh(it)) && (!filterTag || it.tg.includes(filterTag)))
+  const pool = ITEMS.filter(it => visible(it) && !S.read[it.id] && (withOld || fresh(it)) && (!filterTag || it.tg.includes(filterTag)) && (!kind || kindOf(it) === kind))
     .map(it => { const r = score(it, now, seed); it._why = r.why; return { it, sc: r.s }; })
     .sort((a, b) => b.sc - a.sc);
   // mistura: evita a mesma fonte em sequência e o mesmo tema principal colado
@@ -823,8 +836,8 @@ function ranked(filterTag, withOld) {
   }
   return out;
 }
-function recent(filterTag, withOld) {
-  return ITEMS.filter(it => visible(it) && (withOld || fresh(it)) && (!filterTag || it.tg.includes(filterTag))).sort((a, b) => b.date - a.date);
+function recent(filterTag, withOld, kind) {
+  return ITEMS.filter(it => visible(it) && (withOld || fresh(it)) && (!filterTag || it.tg.includes(filterTag)) && (!kind || kindOf(it) === kind)).sort((a, b) => b.date - a.date);
 }
 // um card conta como visto quando metade dele passa pela tela
 let shownT;
@@ -1000,7 +1013,8 @@ function fav(it) {
 }
 function metaRow(it, noTime) {
   const lb = foreign(it) ? `<span class="lb">${it.l.toUpperCase()}${(S.set.trans && (it.tt || S.tr[it.id])) ? ' → PT' : ''}</span>` : '';
-  const kd = kindOf(it) === 'academia' ? `<span class="kd">${ICON.cap}Científico</span>` : kindOf(it) === 'ensaio' ? '<span class="kd">Ensaio</span>' : '';
+  // todo card diz o formato: artigo científico, ensaio, blog ou matéria de revista/portal
+  const k = kindOf(it), kd = `<span class="kd k-${k}">${k === 'academia' ? ICON.cap : ''}${KIND_BADGE[k] || KIND_BADGE.mag}</span>`;
   return `<div class="meta">${fav(it)}<span class="src">${esc(srcOf(it).name)}</span>${noTime || it.nd ? '' : `<time>· ${ago(it.date)}</time>`}${kd}${lb}</div>`;
 }
 const ICON = {
@@ -1054,7 +1068,8 @@ function ring(n, goal, size, stroke) {
   return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle cx="${h}" cy="${h}" r="${r}" stroke-width="${stroke}" fill="none" style="stroke:var(--ring-track,var(--s4))"/><circle cx="${h}" cy="${h}" r="${r}" stroke-width="${stroke}" fill="none" stroke-linecap="round" stroke-dasharray="${c.toFixed(2)}" stroke-dashoffset="${(c * (1 - p)).toFixed(2)}" transform="rotate(-90 ${h} ${h})" style="stroke:var(--ring-fill,var(--p));transition:stroke-dashoffset .7s cubic-bezier(.2,.8,.2,1)"/></svg>`;
 }
 function tagsHtml(it, max = 3) {
-  return it.tg.slice(0, max).map((t, i) => `<span class="tag${i === 0 ? ' main' : ''}">${esc(tagLabel(t))}</span>`).join('');
+  // "academia" já aparece como o selo Científico: não repete como tema
+  return it.tg.filter(t => t !== 'academia').slice(0, max).map((t, i) => `<span class="tag${i === 0 ? ' main' : ''}">${esc(tagLabel(t))}</span>`).join('');
 }
 function saveBtn(it) {
   return `<button class="icobtn bm${S.saved[it.id] ? ' on' : ''}" data-act="save" data-id="${it.id}" aria-label="Salvar">${ICON.bm}</button>`;
@@ -1092,7 +1107,7 @@ function miniHtml(it, extra = '') {
 }
 
 // ---------- telas ----------
-let cur = 'feed', feedMode = 'foryou', feedTag = null, feedList = [], feedShown = 0;
+let cur = 'feed', feedMode = 'foryou', feedTag = null, feedKind = null, feedList = [], feedShown = 0;
 const scrolls = {};
 let ex = { q: '', f: null }, shelf = 'saved';
 
@@ -1117,11 +1132,7 @@ function renderFeedView() {
   }
   const g = S.set.goal;
   const dt = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
-  // os números contam só o que ainda não passou pela tela (é o que o feed vai mostrar)
-  const unseen = ITEMS.filter(it => visible(it) && !S.read[it.id] && (showOld || fresh(it)));
-  const tagsCount = {}; unseen.forEach(it => it.tg.forEach(t => tagsCount[t] = (tagsCount[t] || 0) + 1));
-  const chips = [`<button class="chip${!feedTag ? ' on' : ''}" data-act="ftag" data-tag="">Tudo</button>`]
-    .concat(TAG_ORDER.filter(t => tagsCount[t]).map(t => `<button class="chip${feedTag === t ? ' on' : ''}" data-act="ftag" data-tag="${t}">${esc(tagLabel(t))}<small>${tagsCount[t]}</small></button>`)).join('');
+  const unseen = unseenItems();
   const nn = newCount();
   v.innerHTML = `
     <div class="hello"><div class="kick">${esc(dt)}</div><h1>${helloText()}</h1>
@@ -1130,12 +1141,36 @@ function renderFeedView() {
     <div class="sec-h"><h2>Seus <em>${g}</em> de hoje</h2><span class="aux" id="dailyAux"></span></div>
     <div class="dscroll" id="daily"></div>
     <div class="feedhead"><h2>Feed</h2><div class="seg"><button class="${feedMode === 'foryou' ? 'on' : ''}" data-act="fmode" data-mode="foryou">Para você</button><button class="${feedMode === 'recent' ? 'on' : ''}" data-act="fmode" data-mode="recent">Recentes</button></div></div>
-    <div class="filters"><div class="chips" id="chips">${chips}</div></div>
+    <div class="filters" id="fchips">${filterChips()}</div>
     <div class="feed" id="feedList"></div>
     <div class="more" id="more"></div>`;
   renderDaily();
   renderFeed(true);
-  const on = v.querySelector('.chip.on'); if (on) on.scrollIntoView({ inline: 'center', block: 'nearest' });
+  centerChips();
+}
+// os números contam só o que ainda não passou pela tela (é o que o feed vai mostrar)
+const unseenItems = () => ITEMS.filter(it => visible(it) && !S.read[it.id] && (showOld || fresh(it)));
+// duas fileiras de filtro: formato (científico, ensaio, matéria, blog) e tema; cada contagem respeita o outro filtro
+function filterChips() {
+  const unseen = unseenItems();
+  const tc = {}, kc = {};
+  unseen.forEach(it => {
+    if (!feedKind || kindOf(it) === feedKind) it.tg.forEach(t => tc[t] = (tc[t] || 0) + 1);
+    if (!feedTag || it.tg.includes(feedTag)) kc[kindOf(it)] = (kc[kindOf(it)] || 0) + 1;
+  });
+  const kinds = [`<button class="chip${!feedKind ? ' on' : ''}" data-act="fkind" data-kind="">Todos os formatos</button>`]
+    .concat(Object.keys(KINDS).filter(k => kc[k] || feedKind === k).map(k => `<button class="chip k${feedKind === k ? ' on' : ''}" data-act="fkind" data-kind="${k}">${KIND_ICON[k]}${KIND_CHIP[k]}<small>${kc[k] || 0}</small></button>`)).join('');
+  const tags = [`<button class="chip${!feedTag ? ' on' : ''}" data-act="ftag" data-tag="">Todos os temas</button>`]
+    .concat(TAG_ORDER.filter(t => t !== 'academia' && (tc[t] || feedTag === t)).map(t => `<button class="chip${feedTag === t ? ' on' : ''}" data-act="ftag" data-tag="${t}">${esc(tagLabel(t))}<small>${tc[t] || 0}</small></button>`)).join('');
+  return `<div class="chips" id="kchips">${kinds}</div><div class="chips" id="chips">${tags}</div>`;
+}
+function centerChips() {
+  document.querySelectorAll('#fchips .chip.on').forEach(c => { const row = c.parentNode; row.scrollLeft = c.offsetLeft - row.clientWidth / 2 + c.offsetWidth / 2; });
+}
+function setFilter(kind, tag) {
+  feedKind = kind; feedTag = tag;
+  const box = $('#fchips'); if (box) { box.innerHTML = filterChips(); centerChips(); }
+  renderFeed(true); scrollToFeed();
 }
 function renderDaily() {
   const el = $('#daily'); if (!el) return;
@@ -1154,18 +1189,18 @@ function renderFeed(reset) {
   const box = $('#feedList'); if (!box) return;
   if (reset) {
     const dailyIds = new Set((S.daily && S.daily.day === dayKey() ? S.daily.items : []).map(x => x.id));
-    feedList = feedMode === 'foryou' ? ranked(feedTag, showOld).filter(it => !dailyIds.has(it.id)) : recent(feedTag, showOld);
+    feedList = feedMode === 'foryou' ? ranked(feedTag, showOld, feedKind).filter(it => !dailyIds.has(it.id)) : recent(feedTag, showOld, feedKind);
     feedShown = 0; box.innerHTML = '';
   }
   const next = feedList.slice(feedShown, feedShown + 16);
   box.insertAdjacentHTML('beforeend', next.map((it, i) => cardHtml(it, kindFor(it, feedShown + i))).join(''));
   feedShown += next.length;
   if (feedShown >= feedList.length) {
-    const old = !showOld && ITEMS.some(it => visible(it) && !S.read[it.id] && !fresh(it) && (!feedTag || it.tg.includes(feedTag)));
+    const old = !showOld && ITEMS.some(it => visible(it) && !S.read[it.id] && !fresh(it) && (!feedTag || it.tg.includes(feedTag)) && (!feedKind || kindOf(it) === feedKind));
     const oldBtn = old ? '<div class="btns" style="justify-content:center;margin-top:14px"><button class="btn sm ghost" data-act="showold">Rever os que já passaram</button></div>' : '';
     box.insertAdjacentHTML('beforeend', feedList.length
       ? `<div class="endnote"><b>Você chegou ao fim.</b>O Semiose busca artigos novos a cada 2 horas, e o que você já viu não volta a aparecer.${oldBtn}</div>`
-      : `<div class="endnote"><b>Você já viu tudo o que chegou.</b>${feedTag ? 'Tente outro tema. ' : ''}Os próximos artigos chegam ao longo do dia: o Semiose busca a cada 2 horas.${oldBtn}</div>`);
+      : `<div class="endnote"><b>Você já viu tudo o que chegou.</b>${feedTag || feedKind ? 'Tente outro filtro. ' : ''}Os próximos artigos chegam ao longo do dia: o Semiose busca a cada 2 horas.${oldBtn}</div>`);
   }
   watchSeen(box);
 }
@@ -1217,7 +1252,7 @@ function renderExBody() {
       <div class="list res">${list.slice(0, 80).map(it => miniHtml(it, `<div class="tags" style="margin-top:8px">${S.read[it.id] ? readFlag(it) : tagsHtml(it, 2)}</div>`)).join('') || '<div class="empty"><b>Nada por aqui.</b>Tente outra palavra.</div>'}</div>`;
   } else {
     const P = S.prof.tag;
-    const tiles = TAG_ORDER.filter(t => counts[t]).map((t, i) => {
+    const tiles = TAG_ORDER.filter(t => t !== 'academia' && counts[t]).map((t, i) => {
       const a = P[t] || 0;
       return `<button class="ttile${i === 0 ? ' big' : ''}${a > 1 && i ? ' hot' : ''}" data-act="exf" data-type="tag" data-id="${t}">${a > 1 ? '<span class="aff">você curte</span>' : ''}<b>${esc(tagLabel(t))}</b><span>${counts[t]} artigos</span></button>`;
     }).join('');
@@ -1337,8 +1372,8 @@ function renderMe() {
     <div class="panel" id="remindPanel"><h3>Lembrete diário</h3><p class="h">Escolha a hora em que prefere ler.</p>${remindHtml()}</div>
 
     <div class="panel"><h3>Aparência</h3>
-      <div class="set col"><div><b>Tema</b><span>o automático segue o modo claro ou escuro do celular</span></div>
-        <div style="margin-top:12px"><div class="seg"><button class="${th === 'auto' ? 'on' : ''}" data-act="theme" data-v="auto">Automático</button><button class="${th === 'light' ? 'on' : ''}" data-act="theme" data-v="light">Claro</button><button class="${th === 'dark' ? 'on' : ''}" data-act="theme" data-v="dark">Escuro</button></div></div></div>
+      <div class="set col"><div><b>Tema</b><span>o Semiose abre no escuro; o automático segue o modo claro ou escuro do aparelho</span></div>
+        <div style="margin-top:12px"><div class="seg"><button class="${th === 'dark' ? 'on' : ''}" data-act="theme" data-v="dark">Escuro</button><button class="${th === 'light' ? 'on' : ''}" data-act="theme" data-v="light">Claro</button><button class="${th === 'auto' ? 'on' : ''}" data-act="theme" data-v="auto">Automático</button></div></div></div>
       <div class="set"><div><b>Priorizar português</b><span>artigos em português sobem no feed</span></div><button class="tgl${S.set.pt ? ' on' : ''}" data-act="set" data-k="pt" aria-label="Priorizar português"></button></div>
       <div class="set"><div><b>Mostrar traduzido</b><span>títulos e resumos de fora em português</span></div><button class="tgl${S.set.trans ? ' on' : ''}" data-act="set" data-k="trans" aria-label="Mostrar traduzido"></button></div>
     </div>
@@ -1640,7 +1675,7 @@ function renderDetail(it) {
       ${foreign(it) ? `<div class="trnote">${!tr ? `Em ${esc((LANGS[it.l] || it.l).toLowerCase())} · traduzindo…` : useOrig ? `Texto original em ${esc((LANGS[it.l] || it.l).toLowerCase())} ·` : `Traduzido ${LANG_FROM[it.l] || ''} automaticamente ·`} ${tr ? `<button data-act="orig">${useOrig ? 'ver tradução' : 'ver original'}</button>` : ''}</div>` : ''}
       <div class="kick" style="margin-bottom:12px">${[it.nd ? '' : when, it.au ? esc(it.au.split(/,|\s[-–]\s/)[0].slice(0, 40)) : '', it.m ? `${it.m} min de leitura` : ''].filter(Boolean).join(' · ')}</div>
       ${d ? `<p class="dsum">${esc(d)}</p>` : ''}
-      <div class="dtags">${it.tg.map((x, i) => `<button class="tag${i === 0 ? ' main' : ''}" data-act="gotag" data-tag="${x}">${esc(tagLabel(x))}</button>`).join('')}</div>
+      <div class="dtags">${it.tg.filter(t => t !== 'academia').map((x, i) => `<button class="tag${i === 0 ? ' main' : ''}" data-act="gotag" data-tag="${x}">${esc(tagLabel(x))}</button>`).join('')}</div>
       <div class="actions">${primary}</div>
       <div class="subacts">
         <button data-act="reader" data-id="${it.id}">${ICON.book}Modo leitura</button>
@@ -1886,9 +1921,10 @@ function act(el, e) {
     case 'tab': e.preventDefault(); go(d.tab); break;
     case 'save': e.preventDefault(); e.stopPropagation(); toggleSave(id); if (openId === id) renderDetail(getItem(id)); break;
     case 'close': closeDetail(); break;
-    case 'ftag': feedTag = d.tag || null; document.querySelectorAll('#chips .chip').forEach(c => c.classList.toggle('on', (c.dataset.tag || null) === feedTag)); renderFeed(true); scrollToFeed(); break;
+    case 'ftag': setFilter(feedKind, d.tag || null); break;
+    case 'fkind': setFilter(d.kind || null, feedTag); break;
     case 'fmode': feedMode = d.mode; document.querySelectorAll('[data-act="fmode"]').forEach(b => b.classList.toggle('on', b.dataset.mode === feedMode)); renderFeed(true); scrollToFeed(); break;
-    case 'gotag': closeDetail(); closeReaderIfOpen(); feedTag = d.tag; feedMode = 'foryou'; if (cur !== 'feed') go('feed'); else renderFeedView(); setTimeout(scrollToFeed, 60); break;
+    case 'gotag': closeDetail(); closeReaderIfOpen(); feedTag = d.tag; feedKind = null; feedMode = 'foryou'; feedDirty = true; if (cur !== 'feed') go('feed'); else renderFeedView(); setTimeout(scrollToFeed, 60); break;
     case 'readext': {
       const it = getItem(id); opened(it);
       if (!(S.read[id] && S.read[id].r)) setTimeout(() => askRate(id), 900);
@@ -1917,7 +1953,7 @@ function act(el, e) {
       else { navigator.clipboard && navigator.clipboard.writeText(it.u); toast('Link copiado.'); }
       break;
     }
-    case 'fnew': feedMode = 'recent'; feedTag = null; seenAt = 0; renderFeedView(); setTimeout(() => { const h = $('.feedhead'); if (h) window.scrollTo({ top: h.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' }); }, 60); break;
+    case 'fnew': feedMode = 'recent'; feedTag = null; feedKind = null; seenAt = 0; renderFeedView(); setTimeout(() => { const h = $('.feedhead'); if (h) window.scrollTo({ top: h.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' }); }, 60); break;
     case 'theme': S.set.theme = d.v; save(); applyTheme(); renderMe(); break;
     case 'like': {
       const next = new Set(S.user.likes || []);
@@ -1956,7 +1992,7 @@ function closeReaderIfOpen() { if (!$('#reader').hidden) closeReader(); }
 function scrollToFeed() {
   const h = $('.feedhead'); if (!h) return;
   const y = h.getBoundingClientRect().top + window.scrollY - parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hdr')) + 6;
-  if (window.scrollY > y || feedTag) window.scrollTo({ top: y, behavior: 'smooth' });
+  if (window.scrollY > y || feedTag || feedKind) window.scrollTo({ top: y, behavior: 'smooth' });
 }
 
 // arrastar card: direita salva, esquerda é "menos disso"

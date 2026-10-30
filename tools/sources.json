@@ -1,5 +1,15 @@
 {
-  "_sobre": "Fontes do Semiose. lang = idioma da fonte; kind = academia (revista científica), ensaio (ensaios e opinião), mag (revista ou portal) ou blog; tags = temas da casa (usados quando o texto não deixa claro); filter = só entra matéria que bate com algum tema central (para veículos gerais); w = peso de prioridade (-1 a 1); max = quantas matérias recentes guardar; days = janela em dias.",
+  "_sobre": "Fontes do Semiose. lang = idioma da fonte; kind = academia (revista científica), ensaio (ensaios e opinião), mag (revista ou portal) ou blog; tags = temas da casa (usados quando o texto não deixa claro); filter = só entra matéria que bate com algum tema central (para veículos gerais); aberto = plataforma onde qualquer pessoa publica (passa por um filtro a mais); w = peso de prioridade (-1 a 1); max = quantas matérias recentes guardar; days = janela em dias.",
+  "_bloqueados": "Sites de direita e extrema-direita (e de desinformação) que nunca entram, nem como fonte nem como link vindo de outra fonte. Para bloquear mais um, é só pôr o domínio aqui.",
+  "bloqueados": [
+    "gazetadopovo.com.br", "revistaoeste.com", "oantagonista.com.br", "oantagonista.uol.com.br", "crusoe.com.br", "brasilparalelo.com.br",
+    "jovempan.com.br", "tercalivre.com.br", "brasilsemmedo.com", "sensoincomum.org", "mises.org.br", "conexaopolitica.com.br",
+    "pleno.news", "jornaldacidadeonline.com.br", "renovamidia.com.br", "estudosnacionais.com", "midiasemmascara.org",
+    "breitbart.com", "dailywire.com", "thefederalist.com", "foxnews.com", "dailycaller.com", "theepochtimes.com", "gatewaypundit.com",
+    "thegatewaypundit.com", "infowars.com", "newsmax.com", "oann.com", "zerohedge.com", "americanthinker.com", "frontpagemag.com",
+    "theblaze.com", "nationalreview.com", "quillette.com", "spiked-online.com", "city-journal.org", "washingtonexaminer.com",
+    "theamericanconservative.com", "dailysignal.com", "pjmedia.com", "townhall.com", "rumble.com", "gab.com"
+  ],
   "sources": [
     { "id": "observatorio", "name": "Observatório da Imprensa", "site": "https://www.observatoriodaimprensa.com.br", "url": "https://www.observatoriodaimprensa.com.br/feed/", "lang": "pt", "kind": "ensaio", "tags": ["jornalismo", "comunicacao"], "w": 0.3 },
     { "id": "objethos", "name": "objETHOS", "site": "https://objethos.wordpress.com", "url": "https://objethos.wordpress.com/feed/", "lang": "pt", "kind": "ensaio", "tags": ["jornalismo", "comunicacao"], "w": 0.3, "days": 60 },
@@ -10,7 +20,7 @@
     { "id": "serrote", "name": "Revista Serrote", "site": "https://www.revistaserrote.com.br", "url": "https://www.revistaserrote.com.br/feed/", "lang": "pt", "kind": "ensaio", "tags": ["cultura", "discurso"], "filter": true, "w": 0.3, "days": 120, "max": 6 },
     { "id": "quatrocincoum", "name": "Quatro Cinco Um", "site": "https://quatrocincoum.com.br", "url": "https://quatrocincoum.com.br/feed/", "lang": "pt", "kind": "ensaio", "tags": ["cultura"], "filter": true, "w": 0.1, "max": 6 },
     { "id": "ims", "name": "Instituto Moreira Salles", "site": "https://ims.com.br", "url": "https://ims.com.br/feed/", "lang": "pt", "kind": "ensaio", "tags": ["imagem", "cultura"], "filter": true, "w": 0.1, "max": 6 },
-    { "id": "medium-semiotica", "name": "Medium · #semiótica", "site": "https://medium.com/tag/semiotica", "url": "https://medium.com/feed/tag/semiotica", "lang": "pt", "kind": "blog", "tags": ["semiotica"], "w": 0.4, "days": 60 },
+    { "id": "medium-semiotica", "name": "Medium · #semiótica", "site": "https://medium.com/tag/semiotica", "url": "https://medium.com/feed/tag/semiotica", "lang": "pt", "kind": "blog", "aberto": true, "tags": ["semiotica"], "w": 0.4, "days": 60 },
     { "id": "fapesp", "name": "Pesquisa FAPESP", "site": "https://revistapesquisa.fapesp.br", "url": "https://revistapesquisa.fapesp.br/category/humanidades/feed/", "lang": "pt", "kind": "mag", "tags": ["cultura"], "filter": true, "w": 0.1, "days": 45, "max": 8 },
     { "id": "jornalusp", "name": "Jornal da USP", "site": "https://jornal.usp.br", "url": "https://jornal.usp.br/feed/", "lang": "pt", "kind": "mag", "tags": ["comunicacao"], "filter": true, "w": 0, "max": 6 },
     { "id": "conversationbr", "name": "The Conversation Brasil", "site": "https://theconversation.com/br", "url": "https://theconversation.com/br/articles.atom", "lang": "pt", "kind": "ensaio", "tags": ["comunicacao"], "filter": true, "w": 0.1, "max": 10 },
@@ -52,7 +62,7 @@
     { "id": "mediajornalismo", "name": "Media & Jornalismo (Coimbra)", "site": "https://impactum-journals.uc.pt/mj", "url": "https://impactum-journals.uc.pt/mj/gateway/plugin/WebFeedGatewayPlugin/rss2", "lang": "pt", "kind": "academia", "tags": ["jornalismo"], "w": 0.1 },
 
     { "id": "signsalad", "name": "Sign Salad", "site": "https://signsalad.com", "url": "https://signsalad.com/feed/", "lang": "en", "kind": "blog", "tags": ["semiotica"], "w": 0.6, "days": 120, "max": 6 },
-    { "id": "medium-semiotics", "name": "Medium · #semiotics", "site": "https://medium.com/tag/semiotics", "url": "https://medium.com/feed/tag/semiotics", "lang": "en", "kind": "blog", "tags": ["semiotica"], "w": 0.5, "days": 45 },
+    { "id": "medium-semiotics", "name": "Medium · #semiotics", "site": "https://medium.com/tag/semiotics", "url": "https://medium.com/feed/tag/semiotics", "lang": "en", "kind": "blog", "aberto": true, "tags": ["semiotica"], "w": 0.5, "days": 45 },
     { "id": "sss", "name": "Sign Systems Studies (Tartu)", "site": "https://ojs.utlib.ee/index.php/sss", "url": "https://ojs.utlib.ee/index.php/sss/gateway/plugin/WebFeedGatewayPlugin/rss2", "lang": "en", "kind": "academia", "tags": ["semiotica"], "w": 0.6, "max": 8 },
     { "id": "langcomm", "name": "Language & Communication", "site": "https://www.sciencedirect.com/journal/language-and-communication", "url": "https://rss.sciencedirect.com/publication/science/02715309", "lang": "en", "kind": "academia", "tags": ["discurso"], "w": 0.3 },
     { "id": "dcm", "name": "Discourse, Context & Media", "site": "https://www.sciencedirect.com/journal/discourse-context-and-media", "url": "https://rss.sciencedirect.com/publication/science/22116958", "lang": "en", "kind": "academia", "tags": ["discurso", "plataformas"], "w": 0.3 },
@@ -68,7 +78,7 @@
     { "id": "aeon", "name": "Aeon", "site": "https://aeon.co", "url": "https://aeon.co/feed.rss", "lang": "en", "kind": "ensaio", "tags": ["cultura", "discurso"], "filter": true, "w": 0.3, "max": 8 },
     { "id": "noema", "name": "Noema", "site": "https://www.noemamag.com", "url": "https://www.noemamag.com/feed/", "lang": "en", "kind": "ensaio", "tags": ["tecnologia", "cultura"], "filter": true, "w": 0.1, "max": 5 },
     { "id": "publicbooks", "name": "Public Books", "site": "https://www.publicbooks.org", "url": "https://www.publicbooks.org/feed/", "lang": "en", "kind": "ensaio", "tags": ["cultura"], "filter": true, "w": 0.1, "max": 5 },
-    { "id": "marginalian", "name": "The Marginalian", "site": "https://www.themarginalian.org", "url": "https://www.themarginalian.org/feed/", "lang": "en", "kind": "ensaio", "tags": ["cultura", "discurso"], "filter": true, "w": 0.1, "max": 5 },
+    { "id": "marginalian", "name": "The Marginalian", "site": "https://www.themarginalian.org", "url": "https://www.themarginalian.org/feed/", "lang": "en", "kind": "blog", "tags": ["cultura", "discurso"], "filter": true, "w": 0.1, "max": 5 },
 
     { "id": "ec-aiss", "name": "E|C (Associação Italiana de Semiótica)", "site": "https://mimesisjournals.com/ojs/index.php/ec", "url": "https://mimesisjournals.com/ojs/index.php/ec/gateway/plugin/WebFeedGatewayPlugin/rss2", "lang": "it", "kind": "academia", "tags": ["semiotica"], "w": 0.4, "days": 365 },
     { "id": "signata", "name": "Signata", "site": "https://journals.openedition.org/signata", "url": "https://journals.openedition.org/signata/backend?format=rssdocuments", "lang": "fr", "kind": "academia", "tags": ["semiotica"], "w": 0.5, "days": 365 },

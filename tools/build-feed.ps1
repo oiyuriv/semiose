@@ -74,6 +74,11 @@ $NoiseRx = New-Object Text.RegularExpressions.Regex(('marketing digital|growth h
   'inscri[çc](ões|ão) abertas|programa[çc][ãa]o completa|\bvagas? (abertas|de emprego)|\bjob opening|call for (papers|proposals)|chamada de (artigos|trabalhos)|\bcfp\b|' +
   # páginas de abertura das revistas científicas, que não são artigos
   '^\s*(editorial|sum[áa]rio|expediente|errata|erratum|corrigendum|apresenta[çc][ãa]o|presentation|pr[ée]sentation|table of contents|front matter|back matter|nominata|pareceristas|reviewers)\b'), $RegexOpts)
+# Plataformas abertas (aberto = true, como o Medium) não têm revisão: ali, texto com bordão da extrema-direita fica de fora.
+# Nas revistas e veículos com edição o filtro não vale, porque artigos críticos analisam esses mesmos discursos.
+$OpenRx = New-Object Text.RegularExpressions.Regex(('marxismo cultural|cultural marxism|ideologia de g[êe]nero|gender ideology|globalis(mo|ta|m|t)\b|nova ordem mundial|new world order|' +
+  'doutrina[çc][ãa]o (ideol[óo]gica|esquerdista|marxista)|esquerdopat|comunopetis|olavo de carvalho|escola sem partido|kit gay|great replacement|grande substitui[çc]|' +
+  'woke mind|anti-?woke|wokeism|wokismo|plandemi|fraude nas urnas|stop the steal|deus, p[áa]tria e fam[íi]lia'), $RegexOpts)
 
 function Get-Tags([string]$Text, $Src) {
   $found = New-Object Collections.Generic.List[string]
@@ -497,7 +502,16 @@ function Add-Translations($Items) {
 
 # ---------- coleta ----------
 $cfg = Get-Content -Raw -Encoding UTF8 $Sources | ConvertFrom-Json
-$srcList = @($cfg.sources)
+# sites bloqueados (direita, extrema-direita, desinformação): não entram como fonte nem como link
+$Blocked = @($cfg.bloqueados | ForEach-Object { ([string]$_).ToLowerInvariant() -replace '^www\.', '' })
+function Test-Blocked([string]$u) {
+  try { $h = ([Uri]$u).Host.ToLowerInvariant() -replace '^www\.', '' } catch { return $false }
+  foreach ($d in $Blocked) { if ($h -eq $d -or $h.EndsWith('.' + $d)) { return $true } }
+  $false
+}
+$srcList = @($cfg.sources | Where-Object {
+  if ((Test-Blocked $_.url) -or (Test-Blocked $_.site)) { Write-Warning "Fonte $($_.id) está na lista de bloqueados: ignorada."; $false } else { $true }
+})
 $srcById = @{}; foreach ($s in $srcList) { $srcById[$s.id] = $s }
 $now = [DateTimeOffset]::UtcNow
 $nowIso = $now.ToString('o')
@@ -578,6 +592,8 @@ foreach ($grp in ($pool | Group-Object { $_.s })) {
     if ($lang -eq 'id') { continue }
     if ($lang) { $it.l = $lang }
     if ($NoiseRx.IsMatch($it.t)) { continue }
+    if (Test-Blocked $it.u) { continue }
+    if ($src.aberto -and $OpenRx.IsMatch("$($it.t) $($it.d)")) { continue }
     if ($src.filter -and -not $FilterRx.IsMatch($it.t) -and @($FilterRx.Matches("$($it.d)") | ForEach-Object { $_.Value.ToLowerInvariant() } | Sort-Object -Unique).Count -lt 2) { continue }
     $it.tg = (Get-Tags ("$($it.t) $($it.d) $($it.tt) $($it.td) $($it.cats)") $src).tags
     $cands += , @{ it = $it; at = $at }
