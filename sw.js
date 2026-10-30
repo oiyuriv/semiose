@@ -1,6 +1,6 @@
 // Semiose: busca a versão mais nova quando tem internet e usa a cópia guardada quando não tem.
 // Também dá os avisos do dia onde o navegador deixa (Android com o app instalado, via periodicSync).
-const CACHE = 'semiose-v4';
+const CACHE = 'semiose-v5';
 // ajustes que o app deixa para cá (o service worker não lê o localStorage)
 const CFG = 'semiose-cfg';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'];

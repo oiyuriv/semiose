@@ -67,7 +67,11 @@ $FilterRx = New-Object Text.RegularExpressions.Regex(('s[eé]mi[oó]ti|semiolog|
   'linguag|\blanguages?\b|\blangage|lingu[íi]st|fotogra|photogra|narrativ|\bdiscurs|discours|ret[óo]ric|rhetoric|s[íi]mbol|symbol|\bsignos?\b|signific|' +
   'met[áa]fora|metaphor|\bmemes?\b|redes sociais|social media|influenciad|influencer|desinforma|disinformation|misinformation|fake news|algoritm|algorithm|plataformas digitais|big techs?|cultura visual|visual culture|est[ée]tica|aesthetic|' +
   'storytelling|audiovisual|televis|telenovela|\bcinema|document[áa]ri|\bpalavras?\b|tradu[çc]|translat|\bleitura|\bleitor|\breading|\bescrit|\bwriting|\bimagens?\b|\bimages?\b|imagin[áa]rio|' +
-  'intelig[êe]ncia artificial|artificial intelligence|\bIA\b|\bAI\b|chatgpt|ilustra|illustrat|cartaz|\bposters?\b|\bdesign|tipogra|typogra|grafite|graffiti|\bpodcasts?\b|\br[áa]dio\b|esfera p[úu]blica|public sphere|opini[ãa]o p[úu]blica'), $RegexOpts)
+  'intelig[êe]ncia artificial|artificial intelligence|\bIA\b|\bAI\b|chatgpt|ilustra|illustrat|cartaz|\bposters?\b|\bdesign|tipogra|typogra|grafite|graffiti|\bpodcasts?\b|\br[áa]dio\b|esfera p[úu]blica|public sphere|opini[ãa]o p[úu]blica|' +
+  # alemão (as fontes gerais da Alemanha passam por este filtro antes da tradução)
+  '\bmedien|journalismus|kommunikation|öffentlichkeit|\bsprache|zeichen|semiotik|desinformation|plattform|werbung|fotografie|fernseh|rundfunk|\bdiskurs|rhetorik|künstliche intelligenz|\bKI\b|presse|' +
+  # japonês: mídia, jornalismo, reportagem, TV, rádio, redes, comunicação, língua, signo, publicidade, design, foto, imagem, cinema, expressão, crítica, desinformação, plataforma, editoras
+  'メディア|ジャーナリズム|報道|記者|新聞|テレビ|放送|ＳＮＳ|SNS|ソーシャル|コミュニケーション|言語|言葉|ことば|記号|広告|デザイン|写真|映像|映画|表現|批評|偽情報|フェイク|アルゴリズム|生成AI|プラットフォーム|出版'), $RegexOpts)
 # O Semiose é para ler além do marketing: título com cara de dica de venda, SEO ou promoção fica de fora.
 $NoiseRx = New-Object Text.RegularExpressions.Regex(('marketing digital|growth hack|\bSEO\b|\bleads?\b|funil de vendas|sales funnel|tr[áa]fego pago|\bcopywriting|como (vender|viralizar|ganhar seguidores|bombar)|' +
   '\bdicas? (de|para) (marketing|vendas|instagram|tiktok|linkedin)|\bcupo(m|ns)\b|black friday|\bpromo[çc](ão|ões)\b|e-?commerce|webinar|patrocinado|\bsponsored\b|publieditorial|\bpublipost|' +
@@ -235,11 +239,14 @@ $LangWords = @{
   es = 'el los las del por con pero sus está muy y lo su más cuando también'
   fr = 'le les des du est et pour dans qui sur pas au aux ce cette elle sont avec une'
   it = 'della che di gli sono non nel dei delle anche alla più questo uno ed nella'
-  id = 'yang dan dengan untuk tidak ini dari akan pada dalam itu adalah bahwa oleh juga cuma tapi bukan sebuah tentang karena sebagai atau bisa lebih kita kami mereka makna iklan'
+  de = 'der die das und ist nicht mit sich auf für von zu den dem ein eine auch als wird bei sind wie'
+  id ='yang dan dengan untuk tidak ini dari akan pada dalam itu adalah bahwa oleh juga cuma tapi bukan sebuah tentang karena sebagai atau bisa lebih kita kami mereka makna iklan'
 }
 $LangSets = @{}
 foreach ($k in $LangWords.Keys) { $LangSets[$k] = New-Object 'Collections.Generic.HashSet[string]' (, [string[]]($LangWords[$k] -split ' ')) }
 function Get-Language([string]$Text) {
+  # japonês não separa palavras por espaço: reconhece pelo silabário (hiragana e katakana)
+  if ([regex]::Matches($Text, '[぀-ヿ]').Count -ge 3) { return 'ja' }
   $score = @{}
   foreach ($w in ($Text.ToLowerInvariant() -split '[^\p{L}]+')) {
     if (-not $w) { continue }
@@ -420,6 +427,8 @@ function Read-Item($Node, $Src) {
   if ($img) { $img = $img -replace '^http://', 'https://' }
 
   $author = Get-Text $Node $XP.author
+  # J-STAGE (revistas do Japão) traz o nome em japonês e em inglês: fica o japonês
+  if (-not $author) { $author = Get-Text $Node "*[local-name()='author']/*[local-name()='ja']/*[local-name()='name']" }
   if (-not $author) { $author = Get-Text $Node $XP.creator }
   if ($author -match '@' -and $author -match '\(([^)]+)\)') { $author = $Matches[1] }
   if ($author -match '@') { $author = '' }
@@ -512,6 +521,11 @@ function Test-Blocked([string]$u) {
 $srcList = @($cfg.sources | Where-Object {
   if ((Test-Blocked $_.url) -or (Test-Blocked $_.site)) { Write-Warning "Fonte $($_.id) está na lista de bloqueados: ignorada."; $false } else { $true }
 })
+# endereços com {ano} ou {ano-N} (API do J-STAGE: artigos publicados desde aquele ano)
+$thisYear = [DateTime]::UtcNow.Year
+foreach ($s in $srcList) {
+  $s.url = [regex]::Replace($s.url, '\{ano(?:-(\d))?\}', { param($m) [string]($thisYear - [int]("0" + $m.Groups[1].Value)) })
+}
 $srcById = @{}; foreach ($s in $srcList) { $srcById[$s.id] = $s }
 $now = [DateTimeOffset]::UtcNow
 $nowIso = $now.ToString('o')
@@ -653,7 +667,7 @@ $feed = [ordered]@{
   updated = $nowIso
   tags = @($TagRules | ForEach-Object { [ordered]@{ id = $_.id; label = $_.label } })
   sources = @($srcList | ForEach-Object {
-    [ordered]@{ id = $_.id; name = $_.name; site = $_.site; lang = $_.lang; kind = $(if ($_.kind) { $_.kind } else { 'mag' }); tags = @($_.tags); w = $(if ($_.w) { $_.w } else { 0 }); n = [int]$counts[$_.id]; ok = ($status[$_.id] -eq 'ok') }
+    [ordered]@{ id = $_.id; name = $_.name; site = $_.site; lang = $_.lang; pais = $(if ($_.pais) { $_.pais } else { 'INT' }); kind = $(if ($_.kind) { $_.kind } else { 'mag' }); tags = @($_.tags); w = $(if ($_.w) { $_.w } else { 0 }); n = [int]$counts[$_.id]; ok = ($status[$_.id] -eq 'ok') }
   })
   items = $items
 }

@@ -136,7 +136,7 @@ main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding-bottom:ca
 .dend b{font:400 22px/1.2 var(--sans);color:var(--text)}
 
 /* filtros */
-.filters{position:sticky;top:var(--hdr);z-index:15;background:var(--bg);padding:8px 0 10px;transition:background .25s}
+.filters{position:relative;z-index:15;background:var(--bg);padding:8px 0 10px;transition:background .25s}
 .chips{display:flex;gap:8px;overflow-x:auto;padding:0 16px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:none;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:8px;border:1px solid var(--line2);font:500 13.5px/1 var(--sans);color:var(--muted);white-space:nowrap;transition:background .2s,color .2s,border-color .2s}
@@ -275,6 +275,16 @@ main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding-bottom:ca
 .ktile .ki{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--tc);color:var(--ontc)}
 .ktile b{display:block;font:500 14.5px/1.2 var(--sans)}
 .ktile span{font:400 12.5px/1.2 var(--sans);color:var(--faint)}
+/* pelo mundo: a cena de cada lugar */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px}
+.ptile{display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;background:var(--card);text-align:left;min-width:0}
+.ptile .pc{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--sc);color:var(--onsc);font:600 13px/1 var(--sans);letter-spacing:.04em}
+.ptile.home .pc{background:var(--pc);color:var(--onpc)}
+.ptile > span:last-child{min-width:0}
+.ptile b{display:block;font:500 14.5px/1.2 var(--sans)}
+.ptile span span{display:block;font:400 12px/1.3 var(--sans);color:var(--faint);margin-top:2px}
+.chips.places .chip svg{color:var(--p)}
+.chips.places .chip.on svg{display:none}
 .list{padding:0 16px}
 .srow{display:flex;align-items:center;gap:14px;padding:11px 4px;border-bottom:1px solid var(--line);width:100%}
 .srow .fav{width:36px;height:36px;font-size:14px}
@@ -551,6 +561,7 @@ main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding-bottom:ca
   .vsub{padding:4px 4px 0}
   .search{margin:16px 0 8px;max-width:720px}
   .tgrid,.kgrid{grid-template-columns:repeat(4,1fr);padding:0;gap:12px}
+  .pgrid{grid-template-columns:repeat(3,1fr);padding:0;gap:12px}
   .ttile.big{grid-column:span 2}
   #v-explore .chips{padding:0}
   .list{padding:0 4px}
@@ -689,8 +700,8 @@ const pad = n => String(n).padStart(2, '0');
 // o dia vira às 4h: leitura de madrugada conta para o dia anterior
 const dayKey = (t = Date.now()) => { const d = new Date(t - 4 * 3600e3); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
 const shiftDay = (k, n) => { const [y, m, d] = k.split('-').map(Number); const x = new Date(y, m - 1, d + n); return `${x.getFullYear()}-${pad(x.getMonth() + 1)}-${pad(x.getDate())}`; };
-const LANGS = { pt: 'Português', en: 'Inglês', es: 'Espanhol', fr: 'Francês', it: 'Italiano' };
-const LANG_FROM = { en: 'do inglês', es: 'do espanhol', fr: 'do francês', it: 'do italiano' };
+const LANGS = { pt: 'Português', en: 'Inglês', es: 'Espanhol', fr: 'Francês', it: 'Italiano', de: 'Alemão', ja: 'Japonês' };
+const LANG_FROM = { en: 'do inglês', es: 'do espanhol', fr: 'do francês', it: 'do italiano', de: 'do alemão', ja: 'do japonês' };
 const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 function ago(t) {
   const m = (Date.now() - t) / 6e4;
@@ -758,6 +769,15 @@ const snap = it => ({ id: it.id, s: it.s, u: it.u, t: it.t, d: it.d, tt: it.tt, 
 const srcOf = it => SRC[it.s] || { id: it.s, name: it.s, site: it.u, lang: it.l, w: 0 };
 const tagLabel = t => TAGL[t] || TAG_FALLBACK[t] || t;
 const kindOf = it => srcOf(it).kind || 'mag';
+// a cena de cada lugar (pais em sources.json); América Latina junta os países de língua espanhola de lá
+const SCENES = { BR: 'Brasil', PT: 'Portugal', FR: 'França', BE: 'Bélgica', CA: 'Québec (Canadá)', ES: 'Espanha', LATAM: 'América Latina', IT: 'Itália', DE: 'Alemanha', JP: 'Japão', US: 'Estados Unidos', UK: 'Reino Unido', EE: 'Estônia (Escola de Tartu)', INT: 'Internacional' };
+const SCENE_ORDER = ['BR', 'PT', 'FR', 'ES', 'LATAM', 'IT', 'DE', 'JP', 'US', 'UK', 'CA', 'BE', 'EE', 'INT'];
+const SCENE_CODE = { LATAM: 'AL', INT: '🌐' };
+const sceneOf = it => srcOf(it).pais || (it.l === 'pt' ? 'BR' : 'INT');
+function placeSourcesTxt(p) {
+  const ls = [...new Set(Object.values(SRC).filter(s => (s.pais || 'INT') === p).map(s => s.lang))].map(l => (LANGS[l] || l).toLowerCase());
+  return p === 'BR' ? 'Revistas científicas, ensaios e jornalismo do Brasil.' : `Fontes de lá, escritas em ${ls.join(' e ')}${ls.every(l => l === 'português') ? '' : ' e traduzidas para o português'}. Toque numa fonte para ver só ela.`;
+}
 const foreign = it => it.l && it.l !== 'pt';
 function title(it) {
   if (!foreign(it) || !S.set.trans) return it.t;
@@ -840,9 +860,9 @@ const visible = it => !S.hidden[it.id] && !S.muted[it.s];
 // O que passou pela tela em outro dia só volta pela busca, pelos salvos ou por "rever os que já passaram".
 const fresh = it => !S.shown[it.id] || S.shown[it.id] === dayKey();
 let showOld = false;
-function ranked(filterTag, withOld, kind) {
+function ranked(filterTag, withOld, kind, place) {
   const now = Date.now(), seed = DAYSEED();
-  const pool = ITEMS.filter(it => visible(it) && !S.read[it.id] && (withOld || fresh(it)) && (!filterTag || it.tg.includes(filterTag)) && (!kind || kindOf(it) === kind))
+  const pool = ITEMS.filter(it => visible(it) && !S.read[it.id] && (withOld || fresh(it)) && (!filterTag || it.tg.includes(filterTag)) && (!kind || kindOf(it) === kind) && (!place || sceneOf(it) === place))
     .map(it => { const r = score(it, now, seed); it._why = r.why; return { it, sc: r.s }; })
     .sort((a, b) => b.sc - a.sc);
   // mistura: evita a mesma fonte em sequência e o mesmo tema principal colado
@@ -861,8 +881,8 @@ function ranked(filterTag, withOld, kind) {
   }
   return out;
 }
-function recent(filterTag, withOld, kind) {
-  return ITEMS.filter(it => visible(it) && (withOld || fresh(it)) && (!filterTag || it.tg.includes(filterTag)) && (!kind || kindOf(it) === kind)).sort((a, b) => b.date - a.date);
+function recent(filterTag, withOld, kind, place) {
+  return ITEMS.filter(it => visible(it) && (withOld || fresh(it)) && (!filterTag || it.tg.includes(filterTag)) && (!kind || kindOf(it) === kind) && (!place || sceneOf(it) === place)).sort((a, b) => b.date - a.date);
 }
 // um card conta como visto quando metade dele passa pela tela
 let shownT;
@@ -908,6 +928,9 @@ function dailyPicks() {
     const r = ranked(), pick = [], used = new Set();
     const semi = r.find(it => it.tg.includes('semiotica'));
     if (semi) { pick.push(semi); used.add(semi.s); }
+    // de 3 por dia para cima, um deles vem de fora do Brasil (a cena de outro país)
+    const world = S.set.goal >= 3 && r.find(it => sceneOf(it) !== 'BR' && !used.has(it.s) && !pick.includes(it));
+    if (world) { pick.push(world); used.add(world.s); }
     for (const it of r) {
       if (pick.length >= S.set.goal) break;
       if (used.has(it.s) || pick.includes(it)) continue;
@@ -1132,7 +1155,7 @@ function miniHtml(it, extra = '', focus = '') {
 }
 
 // ---------- telas ----------
-let cur = 'feed', feedMode = 'foryou', feedTag = null, feedKind = null, feedList = [], feedShown = 0;
+let cur = 'feed', feedMode = 'foryou', feedTag = null, feedKind = null, feedPlace = null, feedList = [], feedShown = 0;
 const scrolls = {};
 let ex = { q: '', f: null }, shelf = 'saved';
 
@@ -1175,25 +1198,30 @@ function renderFeedView() {
 }
 // os números contam só o que ainda não passou pela tela (é o que o feed vai mostrar)
 const unseenItems = () => ITEMS.filter(it => visible(it) && !S.read[it.id] && (showOld || fresh(it)));
-// duas fileiras de filtro: formato (científico, ensaio, matéria, blog) e tema; cada contagem respeita o outro filtro
+// três fileiras de filtro: formato (científico, ensaio, matéria, blog), tema e lugar (a cena de cada país);
+// cada contagem respeita os outros dois filtros
 function filterChips() {
   const unseen = unseenItems();
-  const tc = {}, kc = {};
+  const tc = {}, kc = {}, pc = {};
+  const okK = it => !feedKind || kindOf(it) === feedKind, okT = it => !feedTag || it.tg.includes(feedTag), okP = it => !feedPlace || sceneOf(it) === feedPlace;
   unseen.forEach(it => {
-    if (!feedKind || kindOf(it) === feedKind) it.tg.forEach(t => tc[t] = (tc[t] || 0) + 1);
-    if (!feedTag || it.tg.includes(feedTag)) kc[kindOf(it)] = (kc[kindOf(it)] || 0) + 1;
+    if (okK(it) && okP(it)) it.tg.forEach(t => tc[t] = (tc[t] || 0) + 1);
+    if (okT(it) && okP(it)) kc[kindOf(it)] = (kc[kindOf(it)] || 0) + 1;
+    if (okK(it) && okT(it)) pc[sceneOf(it)] = (pc[sceneOf(it)] || 0) + 1;
   });
+  const places = [`<button class="chip${!feedPlace ? ' on' : ''}" data-act="fplace" data-place="">${ICON.globe}O mundo todo</button>`]
+    .concat(SCENE_ORDER.filter(p => pc[p] || feedPlace === p).map(p => `<button class="chip${feedPlace === p ? ' on' : ''}" data-act="fplace" data-place="${p}">${esc(SCENES[p])}<small>${pc[p] || 0}</small></button>`)).join('');
   const kinds = [`<button class="chip${!feedKind ? ' on' : ''}" data-act="fkind" data-kind="">Todos os formatos</button>`]
     .concat(Object.keys(KINDS).filter(k => kc[k] || feedKind === k).map(k => `<button class="chip k${feedKind === k ? ' on' : ''}" data-act="fkind" data-kind="${k}">${KIND_ICON[k]}${KIND_CHIP[k]}<small>${kc[k] || 0}</small></button>`)).join('');
   const tags = [`<button class="chip${!feedTag ? ' on' : ''}" data-act="ftag" data-tag="">Todos os temas</button>`]
     .concat(TAG_ORDER.filter(t => t !== 'academia' && (tc[t] || feedTag === t)).map(t => `<button class="chip${feedTag === t ? ' on' : ''}" data-act="ftag" data-tag="${t}">${esc(tagLabel(t))}<small>${tc[t] || 0}</small></button>`)).join('');
-  return `<div class="chips" id="kchips">${kinds}</div><div class="chips" id="chips">${tags}</div>`;
+  return `<div class="chips" id="kchips">${kinds}</div><div class="chips" id="chips">${tags}</div><div class="chips places" id="pchips">${places}</div>`;
 }
 function centerChips() {
   document.querySelectorAll('#fchips .chip.on').forEach(c => { const row = c.parentNode; row.scrollLeft = c.offsetLeft - row.clientWidth / 2 + c.offsetWidth / 2; });
 }
-function setFilter(kind, tag) {
-  feedKind = kind; feedTag = tag;
+function setFilter(kind, tag, place) {
+  feedKind = kind; feedTag = tag; feedPlace = place;
   const box = $('#fchips'); if (box) { box.innerHTML = filterChips(); centerChips(); }
   renderFeed(true); scrollToFeed();
 }
@@ -1207,25 +1235,25 @@ function renderDaily() {
       <span class="num">${i + 1}</span>${S.read[it.id] ? `<span class="done">${ICON.check} lido</span>` : ''}
       <div class="over">${metaRow(it)}<h3 class="ttl">${esc(title(it))}</h3></div></button>`).join('')
     + (!picks.length ? `<div class="dend"><b>Nada inédito agora.</b>Você já viu tudo o que chegou. Os próximos artigos chegam ao longo do dia.</div>`
-      : readN === picks.length ? `<div class="dend"><b>Seleção completa.</b>Amanhã tem outra, só com artigos que você ainda não viu.</div>` : `<div class="dend"><b>Por que esses?</b>Escolhidos pelo que você vem curtindo, com um de semiótica sempre que tiver. Amanhã vêm outros, nenhum repetido.</div>`);
+      : readN === picks.length ? `<div class="dend"><b>Seleção completa.</b>Amanhã tem outra, só com artigos que você ainda não viu.</div>` : `<div class="dend"><b>Por que esses?</b>Escolhidos pelo que você vem curtindo, com um de semiótica e um de fora do Brasil sempre que tiver. Amanhã vêm outros, nenhum repetido.</div>`);
   watchSeen(el);
 }
 function renderFeed(reset) {
   const box = $('#feedList'); if (!box) return;
   if (reset) {
     const dailyIds = new Set((S.daily && S.daily.day === dayKey() ? S.daily.items : []).map(x => x.id));
-    feedList = feedMode === 'foryou' ? ranked(feedTag, showOld, feedKind).filter(it => !dailyIds.has(it.id)) : recent(feedTag, showOld, feedKind);
+    feedList = feedMode === 'foryou' ? ranked(feedTag, showOld, feedKind, feedPlace).filter(it => !dailyIds.has(it.id)) : recent(feedTag, showOld, feedKind, feedPlace);
     feedShown = 0; box.innerHTML = '';
   }
   const next = feedList.slice(feedShown, feedShown + 16);
   box.insertAdjacentHTML('beforeend', next.map((it, i) => cardHtml(it, kindFor(it, feedShown + i))).join(''));
   feedShown += next.length;
   if (feedShown >= feedList.length) {
-    const old = !showOld && ITEMS.some(it => visible(it) && !S.read[it.id] && !fresh(it) && (!feedTag || it.tg.includes(feedTag)) && (!feedKind || kindOf(it) === feedKind));
+    const old = !showOld && ITEMS.some(it => visible(it) && !S.read[it.id] && !fresh(it) && (!feedTag || it.tg.includes(feedTag)) && (!feedKind || kindOf(it) === feedKind) && (!feedPlace || sceneOf(it) === feedPlace));
     const oldBtn = old ? '<div class="btns" style="justify-content:center;margin-top:14px"><button class="btn sm ghost" data-act="showold">Rever os que já passaram</button></div>' : '';
     box.insertAdjacentHTML('beforeend', feedList.length
       ? `<div class="endnote"><b>Você chegou ao fim.</b>O Semiose busca artigos novos a cada 2 horas, e o que você já viu não volta a aparecer.${oldBtn}</div>`
-      : `<div class="endnote"><b>Você já viu tudo o que chegou.</b>${feedTag || feedKind ? 'Tente outro filtro. ' : ''}Os próximos artigos chegam ao longo do dia: o Semiose busca a cada 2 horas.${oldBtn}</div>`);
+      : `<div class="endnote"><b>Você já viu tudo o que chegou.</b>${feedTag || feedKind || feedPlace ? 'Tente outro filtro. ' : ''}Os próximos artigos chegam ao longo do dia: o Semiose busca a cada 2 horas.${oldBtn}</div>`);
   }
   watchSeen(box);
 }
@@ -1253,8 +1281,8 @@ const KIND_ICON = {
   blog: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5h14v10H9l-4 4z"/></svg>'
 };
 function renderExBody() {
-  const counts = {}, langs = {}, bySrc = {}, kinds = {};
-  ITEMS.forEach(it => { if (S.hidden[it.id]) return; it.tg.forEach(t => counts[t] = (counts[t] || 0) + 1); langs[it.l] = (langs[it.l] || 0) + 1; bySrc[it.s] = (bySrc[it.s] || 0) + 1; kinds[kindOf(it)] = (kinds[kindOf(it)] || 0) + 1; });
+  const counts = {}, places = {}, bySrc = {}, kinds = {};
+  ITEMS.forEach(it => { if (S.hidden[it.id]) return; it.tg.forEach(t => counts[t] = (counts[t] || 0) + 1); places[sceneOf(it)] = (places[sceneOf(it)] || 0) + 1; bySrc[it.s] = (bySrc[it.s] || 0) + 1; kinds[kindOf(it)] = (kinds[kindOf(it)] || 0) + 1; });
   let body = '';
   const q = norm(ex.q.trim());
   if (q || ex.f) {
@@ -1265,6 +1293,7 @@ function renderExBody() {
       if (ex.f.type === 'src') { list = list.filter(it => it.s === ex.f.id); label = (SRC[ex.f.id] || {}).name; }
       if (ex.f.type === 'lang') { list = list.filter(it => it.l === ex.f.id); label = LANGS[ex.f.id]; }
       if (ex.f.type === 'kind') { list = list.filter(it => kindOf(it) === ex.f.id); label = KINDS_PL[ex.f.id]; }
+      if (ex.f.type === 'place') { list = list.filter(it => sceneOf(it) === ex.f.id); label = SCENES[ex.f.id]; }
     }
     if (q) {
       const parts = q.split(/\s+/);
@@ -1273,6 +1302,7 @@ function renderExBody() {
     list.sort((a, b) => b.date - a.date);
     body = `${ex.f ? `<button class="back" data-act="exback">${ICON.back} Explorar</button>` : ''}
       <div class="sec-h"><h2>${ex.f ? esc(label) : 'Resultados'}</h2><span class="aux">${list.length} ${list.length === 1 ? 'artigo' : 'artigos'}</span></div>
+      ${ex.f && ex.f.type === 'place' ? `<p class="vsub" style="margin:-4px 0 10px">${placeSourcesTxt(ex.f.id)}</p><div class="chips" style="flex-wrap:wrap;margin-bottom:8px">${Object.values(SRC).filter(s => (s.pais || 'INT') === ex.f.id && bySrc[s.id]).sort((a, b) => bySrc[b.id] - bySrc[a.id]).map(s => `<button class="chip" data-act="exf" data-type="src" data-id="${s.id}">${esc(s.name)}<small>${bySrc[s.id]}</small></button>`).join('')}</div>` : ''}
       ${ex.f && ex.f.type === 'src' ? `<div class="list" style="margin-bottom:6px"><div class="btns"><a class="btn sm" href="${esc(SRC[ex.f.id].site)}" target="_blank" rel="noopener">${ICON.ext} Abrir site</a><button class="btn sm ghost" data-act="mute" data-src="${ex.f.id}">${S.muted[ex.f.id] ? 'Voltar a mostrar no feed' : 'Esconder do feed'}</button></div></div>` : ''}
       <div class="list res">${list.slice(0, 80).map(it => miniHtml(it, `<div class="tags" style="margin-top:8px">${S.read[it.id] ? readFlag(it) : tagsHtml(it, 2)}</div>`)).join('') || '<div class="empty"><b>Nada por aqui.</b>Tente outra palavra.</div>'}</div>`;
   } else {
@@ -1284,13 +1314,19 @@ function renderExBody() {
     const ktiles = Object.keys(KINDS).filter(k => kinds[k]).map(k => `<button class="ktile" data-act="exf" data-type="kind" data-id="${k}"><span class="ki">${KIND_ICON[k]}</span><span><b>${KINDS_PL[k]}</b><span>${kinds[k]} artigos</span></span></button>`).join('');
     const srcRow = s => `<button class="srow${S.muted[s.id] ? ' muted' : ''}" data-act="exf" data-type="src" data-id="${s.id}">${fav({ s: s.id, u: s.site })}<span class="nm"><b>${esc(s.name)}</b><span>${bySrc[s.id] || 0} artigos · ${(KINDS[s.kind] || KINDS.mag).toLowerCase()}${S.muted[s.id] ? ' · escondida' : ''}</span></span>${S.muted[s.id] ? ICON.eyeoff : ''}</button>`;
     const srcs = Object.values(SRC).filter(s => bySrc[s.id] || S.muted[s.id]).sort((a, b) => (bySrc[b.id] || 0) - (bySrc[a.id] || 0));
+    // a cena de cada lugar: país, idioma em que escreve e quantas fontes/artigos
+    const ptiles = SCENE_ORDER.filter(p => places[p]).map(p => {
+      const ls = [...new Set(Object.values(SRC).filter(s => (s.pais || 'INT') === p && bySrc[s.id]).map(s => s.lang))];
+      const nS = Object.values(SRC).filter(s => (s.pais || 'INT') === p && bySrc[s.id]).length;
+      return `<button class="ptile${p === 'BR' ? ' home' : ''}" data-act="exf" data-type="place" data-id="${p}"><span class="pc">${SCENE_CODE[p] || p}</span><span><b>${esc(SCENES[p])}</b><span>${ls.map(l => (LANGS[l] || l).toLowerCase()).join(', ')} · ${nS} ${nS === 1 ? 'fonte' : 'fontes'} · ${places[p]} artigos</span></span></button>`;
+    }).join('');
     body = `
+      <div class="sec-h"><h2>Pelo mundo</h2><span class="aux">o que vem de fora chega traduzido</span></div>
+      <div class="pgrid">${ptiles}</div>
       <div class="sec-h"><h2>Temas</h2><span class="aux">${ITEMS.length} artigos</span></div>
       <div class="tgrid">${tiles}</div>
       <div class="sec-h"><h2>Formatos</h2></div>
       <div class="kgrid">${ktiles}</div>
-      <div class="sec-h"><h2>Idiomas</h2><span class="aux">o que vem de fora chega traduzido</span></div>
-      <div class="chips" style="flex-wrap:wrap">${Object.keys(LANGS).filter(l => langs[l]).map(l => `<button class="chip" data-act="exf" data-type="lang" data-id="${l}">${LANGS[l]}<small>${langs[l]}</small></button>`).join('')}</div>
       <div class="sec-h"><h2>Fontes em português</h2><span class="aux">toque para ver ou esconder</span></div>
       <div class="list srcs">${srcs.filter(s => s.lang === 'pt').map(srcRow).join('')}</div>
       <div class="sec-h"><h2>Fontes de fora</h2><span class="aux">traduzidas</span></div>
@@ -1649,7 +1685,7 @@ function renderIntro() {
     const qr = IS_PHONE ? '' : `<div class="in-qr"><div class="qr" id="qrBox"></div><div><b>Quer ler no celular também?</b><span>Aponte a câmera do celular para o código. Lá ele pode virar um app.</span></div></div>`;
     body = `<div class="in-logo">${LOGO}</div>
       <h1>${nm ? `Olá, <em>${esc(nm)}</em>.` : 'Boas-vindas ao <em>Semiose</em>.'}</h1>
-      <p class="lead">Todo dia, o Semiose junta o que sai de novo sobre comunicação: semiótica, discurso, jornalismo, mídia e imagem. Vem de revistas científicas, ensaios e revistas do Brasil e de fora. É para ler além do conteúdo de marketing. O que vem em outra língua chega traduzido, e nenhum artigo se repete de um dia para o outro.</p>
+      <p class="lead">Todo dia, o Semiose junta o que sai de novo sobre comunicação: semiótica, discurso, jornalismo, mídia e imagem. Vem de revistas científicas, ensaios e revistas do Brasil e de outros países: Portugal, França, Espanha, América Latina, Itália, Alemanha, Japão, Estados Unidos, Reino Unido. É para ler além do conteúdo de marketing. O que vem em outra língua chega traduzido, e nenhum artigo se repete de um dia para o outro.</p>
       <div class="in-field"><label for="inName">Como prefere ser chamado?</label><input id="inName" value="${esc(nm)}" maxlength="24" autocomplete="off" enterkeyhint="next" placeholder="Seu nome"></div>
       ${qr}
       <div class="in-foot">${back}<button class="btn pri" data-act="inext">Continuar</button></div>`;
@@ -1815,7 +1851,7 @@ function renderDetail(it) {
       </div>
       <div class="ratebox"><p>${r ? (r.r ? 'Sua nota' : 'Lido. <em>Dá uma nota?</em>') : 'Já leu? <em>Como foi?</em>'}</p><small>${r ? (r.r ? 'toque para mudar' : 'a nota ensina o feed') : 'a nota marca como lido e ensina o feed'}</small>${facesRow(it.id, r && r.r)}</div>
       ${noteBox(it)}
-      <p class="srcline">Fonte: ${esc(src.name)} · ${esc(host(it.u))}</p>
+      <p class="srcline">Fonte: ${esc(src.name)} · ${esc(SCENES[sceneOf(it)] || '')}${foreign(it) ? ` (em ${esc((LANGS[it.l] || it.l).toLowerCase())})` : ''} · ${esc(host(it.u))}</p>
     </div>`;
   document.querySelectorAll('#sheetScroll textarea[data-note]').forEach(growNote);
 }
@@ -2069,10 +2105,11 @@ function act(el, e) {
     case 'tab': e.preventDefault(); go(d.tab); break;
     case 'save': e.preventDefault(); e.stopPropagation(); toggleSave(id); if (openId === id) renderDetail(getItem(id)); break;
     case 'close': closeDetail(); break;
-    case 'ftag': setFilter(feedKind, d.tag || null); break;
-    case 'fkind': setFilter(d.kind || null, feedTag); break;
+    case 'ftag': setFilter(feedKind, d.tag || null, feedPlace); break;
+    case 'fplace': setFilter(feedKind, feedTag, d.place || null); break;
+    case 'fkind': setFilter(d.kind || null, feedTag, feedPlace); break;
     case 'fmode': feedMode = d.mode; document.querySelectorAll('[data-act="fmode"]').forEach(b => b.classList.toggle('on', b.dataset.mode === feedMode)); renderFeed(true); scrollToFeed(); break;
-    case 'gotag': closeDetail(); closeReaderIfOpen(); feedTag = d.tag; feedKind = null; feedMode = 'foryou'; feedDirty = true; if (cur !== 'feed') go('feed'); else renderFeedView(); setTimeout(scrollToFeed, 60); break;
+    case 'gotag': closeDetail(); closeReaderIfOpen(); feedTag = d.tag; feedKind = null; feedPlace = null; feedMode = 'foryou'; feedDirty = true; if (cur !== 'feed') go('feed'); else renderFeedView(); setTimeout(scrollToFeed, 60); break;
     case 'readext': {
       const it = getItem(id); opened(it);
       if (!(S.read[id] && S.read[id].r)) setTimeout(() => askRate(id), 900);
@@ -2103,7 +2140,7 @@ function act(el, e) {
       else { navigator.clipboard && navigator.clipboard.writeText(it.u); toast('Link copiado.'); }
       break;
     }
-    case 'fnew': feedMode = 'recent'; feedTag = null; feedKind = null; seenAt = 0; renderFeedView(); setTimeout(() => { const h = $('.feedhead'); if (h) window.scrollTo({ top: h.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' }); }, 60); break;
+    case 'fnew': feedMode = 'recent'; feedTag = null; feedKind = null; feedPlace = null; seenAt = 0; renderFeedView(); setTimeout(() => { const h = $('.feedhead'); if (h) window.scrollTo({ top: h.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' }); }, 60); break;
     case 'theme': S.set.theme = d.v; save(); applyTheme(); renderMe(); break;
     case 'like': {
       const next = new Set(S.user.likes || []);
@@ -2144,7 +2181,7 @@ function closeReaderIfOpen() { if (!$('#reader').hidden) closeReader(); }
 function scrollToFeed() {
   const h = $('.feedhead'); if (!h) return;
   const y = h.getBoundingClientRect().top + window.scrollY - parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hdr')) + 6;
-  if (window.scrollY > y || feedTag || feedKind) window.scrollTo({ top: y, behavior: 'smooth' });
+  if (window.scrollY > y || feedTag || feedKind || feedPlace) window.scrollTo({ top: y, behavior: 'smooth' });
 }
 
 // arrastar card: direita salva, esquerda é "menos disso"
