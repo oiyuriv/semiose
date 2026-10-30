@@ -9,7 +9,7 @@ No iPhone: Safari → Compartilhar → *Adicionar à Tela de Início*. No Androi
 
 - **Hoje**: a seleção do dia (quantos artigos a pessoa escolheu ler por dia, com um de semiótica sempre que tiver) e o feed, que aprende com as notas, os salvos e o “menos disso”. O feed filtra por formato (artigos científicos, ensaios e opinião, matérias, blogs) e por tema, e cada card mostra o formato. O que já passou pela tela em outro dia não volta.
 - **Explorar**: busca, temas, formatos (revistas científicas, ensaios e opinião, revistas e portais, blogs), idiomas e fontes.
-- **Salvos**: o que ficou para ler depois e o que já foi lido.
+- **Salvos**: o que ficou para ler depois, o que já foi lido e as **anotações** (texto livre que a pessoa escreve em cada artigo: resumo com as próprias palavras, conceitos, ideias). Busca por palavra (inclusive dentro das anotações), filtro por tema e exportação das anotações num arquivo de texto.
 - **Perfil**: nome, interesses, artigos por dia, lembrete diário, tema claro, escuro ou automático, estatísticas de leitura e backup.
 
 Fonte Google Sans, cores no esquema do Material 3. Abre sempre no tema escuro; no Perfil dá para trocar para claro ou automático. No computador vira uma versão web (menu lateral, feed em grade). Tudo o que a pessoa faz fica só no aparelho dela (localStorage).

@@ -398,6 +398,25 @@ main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding-bottom:ca
 .faces button.on.v3{color:var(--mid)}
 .faces button.on.v2,.faces button.on.v1{color:var(--bad)}
 .srcline{margin-top:18px;color:var(--faint);font:400 12.5px/1.6 var(--sans)}
+/* anotações do artigo */
+.notebox{margin-top:14px;padding:14px;border-radius:24px;background:var(--s3)}
+.nb-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.nb-h b{display:flex;align-items:center;gap:8px;font-weight:500;font-size:15.5px}
+.nb-h b svg{color:var(--p)}
+.nb-st{font-size:12px;color:var(--faint)}
+.nb-t{display:block;width:100%;min-height:110px;resize:none;overflow:hidden;border:0;outline:0;border-radius:14px;padding:12px 14px;background:var(--bg);color:var(--text);font:400 16px/1.55 var(--sans)}
+.nb-t::placeholder{color:var(--faint)}
+.nb-t:focus{box-shadow:inset 0 0 0 2px var(--p)}
+.rd-end .notebox{margin:0 0 16px}
+.rnotebtn{display:flex;margin:12px auto 0}
+.noteex{display:flex;align-items:flex-start;gap:8px;margin-top:8px;padding:9px 11px;border-radius:12px;background:var(--s2);color:var(--muted);font-size:13.5px;line-height:1.45}
+.noteex svg{flex:none;width:15px;height:15px;margin-top:2px;color:var(--p)}
+.noteex span{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.svseg{padding:14px 16px 2px}
+.svseg .seg button{padding:0 12px}
+.svchips{margin:4px 0 6px}
+.svcount{padding:6px 20px 0;font-size:12.5px;color:var(--faint)}
+.svexp{justify-content:center;margin:20px 16px 0}
 
 /* pergunta depois de ler no site */
 .rate{position:fixed;inset:0;z-index:70;display:flex;align-items:flex-end;justify-content:center}
@@ -539,6 +558,9 @@ main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding-bottom:ca
   .list.srcs .srow{break-inside:avoid}
   .list.res{display:grid;grid-template-columns:1fr 1fr;column-gap:40px}
   .back{margin:16px 0 0}
+  .svseg{padding:16px 4px 2px}
+  .svchips{padding:0 4px;margin:6px 0 8px}
+  .svcount{padding:6px 4px 0}
   .empty{margin:26px 0}
   #v-me{display:grid;grid-template-columns:1fr 1fr;column-gap:16px;align-items:start}
   #v-me > .prof,#v-me > .stats,#v-me > .about{grid-column:1/-1}
@@ -607,6 +629,7 @@ main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding-bottom:ca
     <button class="icobtn" data-act="rclose" aria-label="Voltar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button>
     <div class="meta" id="rdMeta"></div>
     <button class="icobtn" data-act="rtrans" id="rdTrans" aria-label="Traduzir"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h8M8 3v2M10 5c-.5 3-2.5 6-6 8M6 9c1 2 3 3.5 5 4"/><path d="M13 21l4-9 4 9M14.5 18h5"/></svg></button>
+    <button class="icobtn" data-act="rnote" aria-label="Escrever anotações"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button>
     <button class="icobtn" data-act="rsize" aria-label="Tamanho do texto"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19l4.5-12L12 19M4.6 15h5.8M14 19l3.2-8 3.3 8M15.1 16.5h4.3"/></svg></button>
   </div>
   <div class="rd-prog"><i id="rdProg"></i></div>
@@ -636,6 +659,8 @@ const DEF = {
   seen: 0,
   // shown = artigos que já passaram pela tela (id → dia); de um dia para o outro eles não voltam
   shown: {},
+  // notes = anotações escritas em cada artigo (id → { t: texto, at: criada, up: editada, it: cópia do artigo })
+  notes: {},
   user: { name: '', since: 0, intro: false, likes: [] },
   prof: { tag: {}, src: {}, word: {}, lang: {} },
   // theme: dark (padrão: o app sempre abre escuro), light ou auto (segue o celular); hour = horário do lembrete; notif = avisos do app
@@ -727,7 +752,7 @@ function prep(it) {
 }
 // artigo que já saiu do feed (salvo, lido, seleção do dia) continua existindo pela cópia guardada
 function getItem(id) {
-  return BYID[id] || (S.saved[id] && prep(S.saved[id])) || (S.read[id] && S.read[id].it && prep(S.read[id].it)) || (S.daily && S.daily.items.find(x => x.id === id) && prep(S.daily.items.find(x => x.id === id))) || null;
+  return BYID[id] || (S.saved[id] && prep(S.saved[id])) || (S.notes[id] && S.notes[id].it && prep(S.notes[id].it)) || (S.read[id] && S.read[id].it && prep(S.read[id].it)) || (S.daily && S.daily.items.find(x => x.id === id) && prep(S.daily.items.find(x => x.id === id))) || null;
 }
 const snap = it => ({ id: it.id, s: it.s, u: it.u, t: it.t, d: it.d, tt: it.tt, td: it.td, img: it.img, at: it.at, tg: it.tg, l: it.l, m: it.m, au: it.au, nd: it.nd });
 const srcOf = it => SRC[it.s] || { id: it.s, name: it.s, site: it.u, lang: it.l, w: 0 };
@@ -1102,8 +1127,8 @@ function kindFor(it, i) {
   if (!it.img) return 'text';
   return i % 5 === 2 || i % 5 === 4 ? 'row' : 'std';
 }
-function miniHtml(it, extra = '') {
-  return `<button class="mini" data-open="${it.id}">${media(it, 200)}<div style="min-width:0">${metaRow(it)}<h3 class="ttl">${esc(title(it))}</h3>${extra}</div></button>`;
+function miniHtml(it, extra = '', focus = '') {
+  return `<button class="mini" data-open="${it.id}"${focus ? ` data-focus="${focus}"` : ''}>${media(it, 200)}<div style="min-width:0">${metaRow(it)}<h3 class="ttl">${esc(title(it))}</h3>${extra}</div></button>`;
 }
 
 // ---------- telas ----------
@@ -1243,7 +1268,7 @@ function renderExBody() {
     }
     if (q) {
       const parts = q.split(/\s+/);
-      list = list.filter(it => { const h = norm(`${it.t} ${it.tt || ''} ${it.d || ''} ${it.td || ''} ${it.au || ''} ${srcOf(it).name} ${it.tg.map(tagLabel).join(' ')}`); return parts.every(p => h.includes(p)); });
+      list = list.filter(it => { const h = norm(`${it.t} ${it.tt || ''} ${it.d || ''} ${it.td || ''} ${it.au || ''} ${srcOf(it).name} ${it.tg.map(tagLabel).join(' ')} ${(S.notes[it.id] || {}).t || ''}`); return parts.every(p => h.includes(p)); });
     }
     list.sort((a, b) => b.date - a.date);
     body = `${ex.f ? `<button class="back" data-act="exback">${ICON.back} Explorar</button>` : ''}
@@ -1274,27 +1299,93 @@ function renderExBody() {
   $('#exBody').innerHTML = body;
 }
 
+// Salvos tem três partes: para ler, lidos e anotações. A busca (título, fonte, autor, tema e o texto das
+// anotações) e o filtro por tema valem para a parte aberta. A busca fica fixa e só a lista é redesenhada,
+// para o teclado do celular não fechar enquanto a pessoa digita.
+let shelfQ = '', shelfTag = '';
+function shelfLists() {
+  const saved = Object.values(S.saved).sort((a, b) => (b.sv || 0) - (a.sv || 0)).map(x => getItem(x.id) || prep(x));
+  const reads = Object.keys(S.read).sort((a, b) => S.read[b].at - S.read[a].at).map(getItem).filter(Boolean);
+  const notes = Object.keys(S.notes).sort((a, b) => S.notes[b].up - S.notes[a].up).map(getItem).filter(Boolean);
+  return { saved, read: reads, notes };
+}
 function renderSaved() {
   const v = $('#v-saved');
-  const saved = Object.values(S.saved).sort((a, b) => (b.sv || 0) - (a.sv || 0)).map(x => getItem(x.id) || prep(x));
-  const reads = Object.keys(S.read).filter(id => S.read[id].it).sort((a, b) => S.read[b].at - S.read[a].at).map(id => getItem(id)).filter(Boolean);
-  const list = shelf === 'saved' ? saved : reads;
+  if (!$('#svBody')) {
+    v.innerHTML = `<h1 class="vh">Salvos</h1><div class="svseg" id="svSeg"></div>
+      <label class="search"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg><input id="sq" type="search" autocomplete="off" enterkeyhint="search"></label>
+      <div id="svBody"></div>`;
+    const inp = $('#sq');
+    inp.addEventListener('input', () => { shelfQ = inp.value; clearTimeout(inp._t); inp._t = setTimeout(renderShelfBody, 160); });
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); });
+  }
+  const L = shelfLists();
+  $('#svSeg').innerHTML = `<div class="seg"><button class="${shelf === 'saved' ? 'on' : ''}" data-act="shelf" data-v="saved">Para ler · ${L.saved.length}</button><button class="${shelf === 'read' ? 'on' : ''}" data-act="shelf" data-v="read">Lidos · ${L.read.length}</button><button class="${shelf === 'notes' ? 'on' : ''}" data-act="shelf" data-v="notes">Anotações · ${L.notes.length}</button></div>`;
+  const inp = $('#sq');
+  inp.placeholder = shelf === 'notes' ? 'Buscar nas suas anotações…' : shelf === 'read' ? 'Buscar nos lidos e nas anotações…' : 'Buscar nos salvos…';
+  if (inp.value !== shelfQ) inp.value = shelfQ;
+  renderShelfBody();
+}
+function noteExcerpt(it) {
+  const n = S.notes[it.id]; if (!n) return '';
+  return `<div class="noteex">${ICON.pen}<span>${esc(n.t.replace(/\s+/g, ' ').trim())}</span></div>`;
+}
+function rateTxt(r) {
+  return r && r.r ? `<span style="color:${r.r >= 4 ? 'var(--p)' : r.r === 3 ? 'var(--mid)' : 'var(--bad)'};display:flex;align-items:center;gap:6px">${face(r.r)}${FACES.find(f => f.v === r.r).label}</span>` : 'sem nota';
+}
+function renderShelfBody() {
+  const all = shelfLists()[shelf];
+  // temas que existem nesta parte, para filtrar
+  const tc = {}; all.forEach(it => it.tg.forEach(t => { if (t !== 'academia') tc[t] = (tc[t] || 0) + 1; }));
+  if (shelfTag && !tc[shelfTag]) shelfTag = '';
+  let list = all.filter(it => !shelfTag || it.tg.includes(shelfTag));
+  const q = norm(shelfQ.trim());
+  if (q) {
+    const parts = q.split(/\s+/);
+    list = list.filter(it => { const h = norm(`${it.t} ${it.tt || ''} ${it.d || ''} ${it.td || ''} ${it.au || ''} ${srcOf(it).name} ${it.tg.map(tagLabel).join(' ')} ${(S.notes[it.id] || {}).t || ''}`); return parts.every(p => h.includes(p)); });
+  }
+  const chips = all.length > 1 && Object.keys(tc).length ? `<div class="chips svchips">${[`<button class="chip${!shelfTag ? ' on' : ''}" data-act="stag" data-tag="">Todos os temas</button>`]
+    .concat(TAG_ORDER.filter(t => tc[t]).map(t => `<button class="chip${shelfTag === t ? ' on' : ''}" data-act="stag" data-tag="${t}">${esc(tagLabel(t))}<small>${tc[t]}</small></button>`)).join('')}</div>` : '';
   let body;
-  if (!list.length) {
+  if (!all.length) {
     body = shelf === 'saved'
       ? `<div class="empty"><b>Nada salvo ainda.</b>Toque no marcador de um artigo ou arraste o card para a direita.</div>`
-      : `<div class="empty"><b>Nenhuma leitura ainda.</b>Leia e dê uma nota: cada nota ensina o feed.</div>`;
+      : shelf === 'read'
+        ? `<div class="empty"><b>Nenhuma leitura ainda.</b>Leia e dê uma nota: cada nota ensina o feed.</div>`
+        : `<div class="empty"><b>Nenhuma anotação ainda.</b>Abra um artigo e escreva em “Suas anotações”: um resumo com as suas palavras, um conceito, uma ideia. Fica tudo aqui, fácil de achar depois.</div>`;
+  } else if (!list.length) {
+    body = `<div class="empty"><b>Nada encontrado.</b>Tente outra palavra${shelfTag ? ' ou outro tema' : ''}.</div>`;
   } else {
     body = `<div class="list res">${list.map(it => {
       const r = S.read[it.id];
-      const extra = shelf === 'saved'
-        ? `<div class="foot" style="margin-top:8px"><div class="tags">${r ? readFlag(it) : tagsHtml(it, 2)}</div></div>`
-        : `<div class="foot" style="margin-top:8px"><div class="meta">${r.r ? `<span style="color:${r.r >= 4 ? 'var(--p)' : r.r === 3 ? 'var(--mid)' : 'var(--bad)'};display:flex;align-items:center;gap:6px">${face(r.r)}${FACES.find(f => f.v === r.r).label}</span>` : 'sem nota'} · ${ago(r.at)}</div></div>`;
-      return miniHtml(it, extra);
+      let extra;
+      if (shelf === 'saved') extra = `<div class="foot" style="margin-top:8px"><div class="tags">${r ? readFlag(it) : tagsHtml(it, 2)}</div></div>${noteExcerpt(it)}`;
+      else if (shelf === 'read') extra = `<div class="foot" style="margin-top:8px"><div class="meta">${rateTxt(r)} · ${ago(r.at)}</div></div>${noteExcerpt(it)}`;
+      else extra = `${noteExcerpt(it)}<div class="meta" style="margin-top:8px"><span>anotado ${since(S.notes[it.id].up)}</span>${r && r.r ? ` · ${rateTxt(r)}` : ''}</div>`;
+      return miniHtml(it, extra, shelf === 'notes' ? 'notes' : '');
     }).join('')}</div>`;
   }
-  v.innerHTML = `<h1 class="vh">Salvos</h1>
-    <div style="padding:14px 16px 6px"><div class="seg"><button class="${shelf === 'saved' ? 'on' : ''}" data-act="shelf" data-v="saved">Para ler · ${saved.length}</button><button class="${shelf === 'read' ? 'on' : ''}" data-act="shelf" data-v="read">Lidos · ${reads.length}</button></div></div>${body}`;
+  const exp = shelf === 'notes' && all.length ? `<div class="btns svexp"><button class="btn sm" data-act="exportnotes">${ICON.share} Exportar anotações</button></div>` : '';
+  const count = (q || shelfTag) && all.length ? `<p class="svcount">${list.length} de ${all.length}</p>` : '';
+  $('#svBody').innerHTML = chips + count + body + exp;
+}
+// todas as anotações num arquivo de texto (Markdown), para estudar, imprimir ou guardar fora do app
+function exportNotes() {
+  const ids = Object.keys(S.notes).sort((a, b) => S.notes[b].up - S.notes[a].up);
+  const dt = t => { const x = new Date(t); return `${x.getDate()} ${MONTHS[x.getMonth()]} ${x.getFullYear()}`; };
+  const parts = [`# Minhas anotações no Semiose`, '', `Exportado em ${dt(Date.now())}${userName() ? ' por ' + userName() : ''}. ${ids.length} ${ids.length === 1 ? 'artigo' : 'artigos'}.`, ''];
+  ids.forEach(id => {
+    const n = S.notes[id], it = getItem(id) || n.it || {}, r = S.read[id];
+    parts.push(`## ${title(it) || it.t || 'Artigo'}`, '');
+    parts.push(`${srcOf(it).name}${it.au ? ' · ' + it.au : ''}${r && r.r ? ' · nota: ' + FACES.find(f => f.v === r.r).label : ''}  `);
+    parts.push(`${it.u || ''}  `, `Anotado em ${dt(n.up)}`, '', n.t.trim(), '', '---', '');
+  });
+  const name = `semiose-anotacoes-${dayKey()}.md`;
+  const blob = new Blob([parts.join('\n')], { type: 'text/markdown' });
+  const file = new File([blob], name, { type: 'text/markdown' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'Anotações do Semiose' }).catch(() => {}); return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 }
 
 // leituras antigas perdem a cópia do artigo (pruneRead); o tema, a fonte e os minutos ficam no próprio registro
@@ -1643,9 +1734,46 @@ function go(tab) {
   window.scrollTo(0, scrolls[tab] || 0);
 }
 
+// ---------- anotações ----------
+// Cada artigo tem um campo de texto livre (resumo com as próprias palavras, conceitos, ideias).
+// Chamamos de "anotações" para não confundir com a nota das carinhas. Salva sozinho enquanto a pessoa escreve.
+function noteBox(it) {
+  const n = S.notes[it.id];
+  return `<div class="notebox" id="nb-${it.id}"><div class="nb-h"><b>${ICON.pen} Suas anotações</b><span class="nb-st" data-st="${it.id}">${n ? 'salvo' : 'só você vê'}</span></div>
+    <textarea class="nb-t" data-note="${it.id}" rows="4" placeholder="Escreva com as suas palavras: um resumo mais simples, um conceito, uma ideia que o texto te deu…">${esc(n ? n.t : '')}</textarea></div>`;
+}
+function growNote(ta) { ta.style.height = 'auto'; ta.style.height = Math.max(110, ta.scrollHeight + 2) + 'px'; }
+function saveNote(id, txt) {
+  const n = S.notes[id], it = getItem(id);
+  if (!txt.trim()) delete S.notes[id];
+  else {
+    if (!n && it) learn(it, 0.6); // escrever sobre um artigo é sinal forte de interesse
+    S.notes[id] = { t: txt, at: n ? n.at : Date.now(), up: Date.now(), it: it ? snap(it) : n && n.it };
+  }
+  save();
+  document.querySelectorAll(`[data-st="${id}"]`).forEach(s => s.textContent = S.notes[id] ? 'salvo agora' : 'só você vê');
+  // a mesma anotação pode estar aberta na folha e no modo leitura
+  document.querySelectorAll(`textarea[data-note="${id}"]`).forEach(o => { if (o !== document.activeElement) { o.value = txt; growNote(o); } });
+}
+function flushNotes() {
+  document.querySelectorAll('textarea[data-note]').forEach(ta => { if (ta._t) { clearTimeout(ta._t); ta._t = 0; saveNote(ta.dataset.note, ta.value); } });
+}
+document.addEventListener('input', e => {
+  const ta = e.target.closest && e.target.closest('textarea[data-note]'); if (!ta) return;
+  growNote(ta);
+  const st = document.querySelector(`[data-st="${ta.dataset.note}"]`); if (st) st.textContent = 'salvando…';
+  clearTimeout(ta._t); ta._t = setTimeout(() => { ta._t = 0; saveNote(ta.dataset.note, ta.value); }, 600);
+});
+document.addEventListener('focusout', e => { if (e.target.matches && e.target.matches('textarea[data-note]')) flushNotes(); });
+function showNotes(box, scroller) {
+  const nb = box.querySelector('.notebox'); if (!nb) return;
+  scroller.scrollTo({ top: nb.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop - 24, behavior: 'smooth' });
+  setTimeout(() => { const ta = nb.querySelector('textarea'); if (ta) ta.focus({ preventScroll: true }); }, 450);
+}
+
 // ---------- folha do artigo ----------
 let openId = null;
-function openDetail(id) {
+function openDetail(id, focus) {
   const it = getItem(id); if (!it) return;
   openId = id;
   const sh = $('#sheet');
@@ -1654,10 +1782,12 @@ function openDetail(id) {
   document.body.style.overflow = 'hidden';
   requestAnimationFrame(() => requestAnimationFrame(() => sh.classList.add('open')));
   $('#sheetScroll').scrollTop = 0;
-  if (foreign(it) && !it.tt && !(S.tr[it.id] && S.tr[it.id].tt)) ensureTranslated(it).then(ok => { if (ok && openId === id) renderDetail(it); });
+  if (focus === 'notes') setTimeout(() => showNotes($('#sheetScroll'), $('#sheetScroll')), 420);
+  if (foreign(it) && !it.tt && !(S.tr[it.id] && S.tr[it.id].tt)) ensureTranslated(it).then(ok => { if (ok && openId === id && !document.activeElement.matches('textarea[data-note]')) renderDetail(it); });
 }
 let showOrig = false;
 function renderDetail(it) {
+  flushNotes();
   const src = srcOf(it), r = S.read[it.id], tr = foreign(it) && (it.tt || (S.tr[it.id] && S.tr[it.id].tt));
   const useOrig = showOrig || !S.set.trans;
   const t = tr && !useOrig ? title(it) : it.t, d = tr && !useOrig ? summary(it) : (it.d || '');
@@ -1679,25 +1809,30 @@ function renderDetail(it) {
       <div class="actions">${primary}</div>
       <div class="subacts">
         <button data-act="reader" data-id="${it.id}">${ICON.book}Modo leitura</button>
-        <button class="bm${S.saved[it.id] ? ' on' : ''}" data-act="save" data-id="${it.id}">${ICON.bm}${S.saved[it.id] ? 'Salva' : 'Salvar'}</button>
+        <button class="bm${S.saved[it.id] ? ' on' : ''}" data-act="save" data-id="${it.id}">${ICON.bm}${S.saved[it.id] ? 'Salvo' : 'Salvar'}</button>
         <button data-act="share" data-id="${it.id}">${ICON.share}Enviar</button>
         <button data-act="less" data-id="${it.id}">${ICON.less}Menos disso</button>
       </div>
       <div class="ratebox"><p>${r ? (r.r ? 'Sua nota' : 'Lido. <em>Dá uma nota?</em>') : 'Já leu? <em>Como foi?</em>'}</p><small>${r ? (r.r ? 'toque para mudar' : 'a nota ensina o feed') : 'a nota marca como lido e ensina o feed'}</small>${facesRow(it.id, r && r.r)}</div>
+      ${noteBox(it)}
       <p class="srcline">Fonte: ${esc(src.name)} · ${esc(host(it.u))}</p>
     </div>`;
+  document.querySelectorAll('#sheetScroll textarea[data-note]').forEach(growNote);
 }
 function closeDetail() {
+  flushNotes();
   const sh = $('#sheet');
   sh.classList.remove('open');
   openId = null; showOrig = false;
+  // a lista de salvos mostra o trecho das anotações: atualiza ao fechar o artigo
+  if (cur === 'saved') renderSaved();
   setTimeout(() => { if (!sh.classList.contains('open')) { sh.hidden = true; if ($('#reader').hidden) document.body.style.overflow = ''; } }, 420);
 }
 // arrastar para baixo fecha a folha
 (() => {
   const card = $('#sheetCard'), sc = $('#sheetScroll');
   let y0 = null, dy = 0;
-  card.addEventListener('touchstart', e => { if (sc.scrollTop <= 0) { y0 = e.touches[0].clientY; dy = 0; } else y0 = null; }, { passive: true });
+  card.addEventListener('touchstart', e => { if (sc.scrollTop <= 0 && !e.target.closest('textarea')) { y0 = e.touches[0].clientY; dy = 0; } else y0 = null; }, { passive: true });
   card.addEventListener('touchmove', e => {
     if (y0 === null) return;
     dy = e.touches[0].clientY - y0;
@@ -1718,7 +1853,7 @@ function askRate(id) {
   const r = S.read[id];
   if (r && r.r) return;
   pendingRate = id;
-  $('#rateCard').innerHTML = `<div class="kick">voltou da leitura?</div><h3>${esc(title(it))}</h3>${facesRow(id, 0)}<button class="later" data-act="rlater">ainda não terminei</button>`;
+  $('#rateCard').innerHTML = `<div class="kick">voltou da leitura?</div><h3>${esc(title(it))}</h3>${facesRow(id, 0)}<button class="btn sm ghost rnotebtn" data-act="ratenote" data-id="${id}">${ICON.pen} Escrever uma anotação</button><button class="later" data-act="rlater">ainda não terminei</button>`;
   $('#rate').hidden = false;
 }
 function closeRate() { $('#rate').hidden = true; pendingRate = null; }
@@ -1735,7 +1870,9 @@ async function openReader(id) {
   $('#rdTrans').classList.remove('bm', 'on');
   $('#rdBody').style.setProperty('--rd-size', S.set.size + 'px');
   $('#rdBody').innerHTML = `<div class="lede">${esc(srcOf(it).name)}</div><h1>${esc(title(it))}</h1><div class="rd-load"><span class="live"></span>buscando o texto completo…</div>`;
-  $('#rdEnd').innerHTML = '';
+  // a caixa de anotações já aparece enquanto o texto completo carrega
+  $('#rdEnd').innerHTML = noteBox(it);
+  document.querySelectorAll('#rdEnd textarea[data-note]').forEach(growNote);
   $('#rdProg').style.width = '0';
   rd.hidden = false;
   document.body.style.overflow = 'hidden';
@@ -1754,7 +1891,8 @@ async function openReader(id) {
     if (RD.it !== it) return;
     $('#rdBody').innerHTML = `<div class="lede">${esc(srcOf(it).name)}</div><h1>${esc(title(it))}</h1>
       <div class="empty" style="margin:20px 0"><b>Não deu pra trazer o texto aqui.</b>Alguns sites bloqueiam a leitura fora deles.</div>`;
-    $('#rdEnd').innerHTML = `<div class="actions"><a class="btn pri" href="${esc(foreign(it) ? gtUrl(it.u) : it.u)}" target="_blank" rel="noopener" data-act="readext" data-id="${it.id}">${ICON.ext} Abrir no site${foreign(it) ? ' (traduzido)' : ''}</a></div>`;
+    // a caixa de anotações já está lá (e pode estar sendo usada): só acrescenta o botão de abrir no site
+    $('#rdEnd').insertAdjacentHTML('beforeend', `<div class="actions"><a class="btn pri" href="${esc(foreign(it) ? gtUrl(it.u) : it.u)}" target="_blank" rel="noopener" data-act="readext" data-id="${it.id}">${ICON.ext} Abrir no site${foreign(it) ? ' (traduzido)' : ''}</a></div>`);
   }
 }
 function mdBlocks(raw, it) {
@@ -1814,8 +1952,17 @@ function renderReader() {
   const note = foreign(it) ? (useTr ? `<div class="rdnote">Tradução automática ${LANG_FROM[it.l] || ''}. Toque no ícone de tradução para ver o original.</div>` : RD.translating ? `<div class="rdnote">Traduzindo o texto…</div>` : '') : '';
   $('#rdBody').innerHTML = `<div class="lede">${esc(srcOf(it).name)}${it.nd ? '' : ' · ' + ago(it.date)}${it.au ? ' · ' + esc(it.au.split(/,|\s[-–]\s/)[0].slice(0, 40)) : ''}</div><h1>${esc(title(it))}</h1>${note}${html}`;
   const r = S.read[it.id];
-  $('#rdEnd').innerHTML = `<div class="ratebox"><p>${r && r.r ? 'Sua nota' : 'Terminou? <em>Como foi?</em>'}</p><small>a nota ensina o feed</small>${facesRow(it.id, r && r.r)}</div>
+  const rate = `<div class="ratebox"><p>${r && r.r ? 'Sua nota' : 'Terminou? <em>Como foi?</em>'}</p><small>a nota ensina o feed</small>${facesRow(it.id, r && r.r)}</div>`;
+  const typing = document.activeElement && document.activeElement.closest && document.activeElement.closest('#rdEnd .notebox');
+  if (typing) {
+    // a pessoa está escrevendo: troca só a avaliação, sem mexer na caixa de anotações
+    const rb = $('#rdEnd .ratebox'); if (rb) rb.outerHTML = rate; else $('#rdEnd').insertAdjacentHTML('afterbegin', rate);
+  } else {
+    flushNotes();
+    $('#rdEnd').innerHTML = `${rate}${noteBox(it)}
     <div class="actions"><a class="btn" href="${esc(it.u)}" target="_blank" rel="noopener">${ICON.ext} Ver no site original</a></div>`;
+    document.querySelectorAll('#rdEnd textarea[data-note]').forEach(growNote);
+  }
   $('#rdTrans').classList.toggle('on', !!useTr);
   $('#rdTrans').style.color = useTr ? 'var(--g)' : '';
 }
@@ -1839,6 +1986,7 @@ async function translateReader() {
   if (RD.it === it) renderReader();
 }
 function closeReader() {
+  flushNotes();
   const rd = $('#reader');
   rd.classList.remove('open');
   setTimeout(() => { if (!rd.classList.contains('open')) { rd.hidden = true; if ($('#sheet').hidden) document.body.style.overflow = ''; } }, 400);
@@ -1912,7 +2060,7 @@ document.addEventListener('click', e => {
   const a = e.target.closest('[data-act]');
   if (a) return act(a, e);
   const o = e.target.closest('[data-open]');
-  if (o) openDetail(o.dataset.open);
+  if (o) openDetail(o.dataset.open, o.dataset.focus);
 }, true);
 
 function act(el, e) {
@@ -1942,6 +2090,8 @@ function act(el, e) {
       break;
     }
     case 'rlater': closeRate(); break;
+    case 'ratenote': closeRate(); openDetail(id, 'notes'); break;
+    case 'rnote': showNotes($('#rdEnd'), $('#rdScroll')); break;
     case 'reader': openReader(id); break;
     case 'rclose': closeReader(); break;
     case 'rtrans': translateReader(); break;
@@ -1980,7 +2130,9 @@ function act(el, e) {
     case 'exf': ex.f = { type: d.type, id: d.id }; ex.q = ''; renderExplore(); window.scrollTo(0, 0); break;
     case 'exback': ex.f = null; renderExplore(); window.scrollTo(0, 0); break;
     case 'mute': { const s = d.src; if (S.muted[s]) delete S.muted[s]; else S.muted[s] = 1; save(); feedDirty = true; renderExplore(); toast(S.muted[s] ? `${SRC[s].name} não aparece mais no feed.` : `${SRC[s].name} voltou pro feed.`); break; }
-    case 'shelf': shelf = d.v; renderSaved(); break;
+    case 'shelf': shelf = d.v; shelfTag = ''; renderSaved(); break;
+    case 'stag': shelfTag = d.tag; renderShelfBody(); break;
+    case 'exportnotes': exportNotes(); break;
     case 'goal': S.set.goal = Math.min(20, Math.max(1, S.set.goal + +d.d)); if (S.daily) S.daily.items = S.daily.items.slice(0, S.set.goal); if (S.daily && S.daily.items.length < S.set.goal) S.daily = null; save(); feedDirty = true; renderMe(); renderRing(); syncSW(); updAppBadge(); break;
     case 'set': S.set[d.k] = !S.set[d.k]; save(); feedDirty = true; el.classList.toggle('on', S.set[d.k]); ITEMS.forEach(it => delete it._w); break;
     case 'export': exportData(); break;
@@ -2062,7 +2214,7 @@ function scrollToFeed() {
 window.addEventListener('scroll', () => $('#top').classList.toggle('scrolled', window.scrollY > 8), { passive: true });
 document.addEventListener('visibilitychange', () => {
   // saindo do app: guarda a hora da visita (para o "novos desde") e atualiza o número no ícone
-  if (document.visibilityState !== 'visible') { S.seen = Date.now(); save(); syncSW(); updAppBadge(); return; }
+  if (document.visibilityState !== 'visible') { flushNotes(); S.seen = Date.now(); save(); syncSW(); updAppBadge(); return; }
   // voltou de outro app: se o dia virou ou o feed está velho, atualiza
   if (S.daily && S.daily.day !== dayKey()) { renderRing(); if (cur === 'feed') renderFeedView(); }
   if (FEED && Date.now() - Date.parse(FEED.updated) > 2.5 * 3600e3) loadFeed().then(ok => { if (ok && cur === 'feed' && window.scrollY < 200) renderFeedView(); });
